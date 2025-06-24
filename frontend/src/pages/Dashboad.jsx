@@ -229,28 +229,32 @@ const Dashboard = () => {
             </p>
 
             {/* View Mode Toggle */}
-            <div className="flex gap-2 mb-4">
-              <button
-                onClick={() => setViewMode("table")}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  viewMode === "table"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                Table View
-              </button>
-              <button
-                onClick={() => setViewMode("cards")}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  viewMode === "cards"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                Card View
-              </button>
-              <CreateButton />
+            <div className="flex gap-2 mb-4 justify-between w-[95%]">
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setViewMode("table")}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    viewMode === "table"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                >
+                  Table View
+                </button>
+                <button
+                  onClick={() => setViewMode("cards")}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    viewMode === "cards"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                >
+                  Card View
+                </button>
+              </div>
+              <div>
+                <CreateButton />
+              </div>
             </div>
 
             <div className="h-auto py-8 bg-white border-[1px] border-[#9a9a9a] shadow w-[95%] rounded-lg flex flex-col items-center justify-start px-6 overflow-hidden">
