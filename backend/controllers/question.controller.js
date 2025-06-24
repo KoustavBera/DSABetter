@@ -1,0 +1,111 @@
+import mongoose from "mongoose";
+import Question from "../models/questionModel.js";
+
+// ✅ Get all questions for authenticated user
+export const getAllQuestion = async (req, res) => {
+  try {
+    const questions = await Question.find({ user: req.userId }).sort({
+      createdAt: -1,
+    });
+
+    if (questions.length === 0) {
+      return res
+        .status(200)
+        .json({ message: "No questions found yet", data: [] });
+    }
+
+    res.status(200).json(questions);
+  } catch (error) {
+    console.error("getAllQuestion error:", error.message);
+    res
+      .status(500)
+      .json({ message: "getAllQuestion error [@question.controller.js]" });
+  }
+};
+
+// ✅ Add a new question
+export const addQuestion = async (req, res) => {
+  const {
+    title,
+    link,
+    site,
+    difficulty,
+    topic,
+    status,
+    notes,
+    lastRevised,
+    nextRevision,
+  } = req.body;
+
+  if (!title || !link || !topic) {
+    return res
+      .status(400)
+      .json({ message: "Title, link and topic are required" });
+  }
+
+  try {
+    const newQuestion = await Question.create({
+      user: req.userId, // ✅ Correctly using userId from isAuth
+      title,
+      link,
+      site,
+      difficulty,
+      topic,
+      status,
+      notes,
+      lastRevised,
+      nextRevision,
+    });
+
+    res.status(201).json(newQuestion);
+  } catch (error) {
+    console.error("Error saving question:", error.message);
+    res.status(500).json({ message: "Could not save question" });
+  }
+};
+
+// ✅ Delete a question
+export const deleteQuestion = async (req, res) => {
+  try {
+    const question = await Question.findById(req.params.id);
+
+    if (!question) {
+      return res.status(404).json({ message: "Question not found" });
+    }
+
+    if (question.user.toString() !== req.userId.toString()) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    await question.deleteOne();
+    res.status(200).json({ message: "Question deleted!" });
+  } catch (error) {
+    console.error("Error deleting question:", error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// ✅ Update a question
+export const updateQuestion = async (req, res) => {
+  try {
+    const question = await Question.findById(req.params.id);
+
+    if (!question) {
+      return res.status(404).json({ message: "Question not found" });
+    }
+
+    if (question.user.toString() !== req.userId.toString()) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const updated = await Question.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json(updated);
+  } catch (error) {
+    console.error("Update error:", error.message);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
