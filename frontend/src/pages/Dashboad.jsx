@@ -21,34 +21,16 @@ import axios from "axios";
 import { useContext } from "react";
 import { AuthDataContext } from "../../context/AuthContext";
 import CreateButton from "../components/CreateButton";
+import ViewButton from "../components/ViewButton";
 
 const Dashboard = () => {
   const [buttonClicked, setbuttonClicked] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [questions, setQuestions] = useState([]);
   const [error, setError] = useState(null);
+  const [questions, setQuestions] = useState([]);
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [viewMode, setViewMode] = useState("table"); // 'table' or 'cards'
-  const { serverUrl } = useContext(AuthDataContext);
-
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get(serverUrl + "/api/questions", {
-          withCredentials: true,
-        });
-        console.log(res);
-        setQuestions(res.data);
-      } catch (error) {
-        setError(error.message);
-        console.error("Error fetching questions", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchQuestions();
-  }, []);
+  const { serverUrl, userData } = useContext(AuthDataContext);
 
   // Toggle row expansion
   const toggleRowExpansion = (questionId) => {
@@ -123,6 +105,25 @@ const Dashboard = () => {
     return topics;
   };
 
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      setLoading(true);
+      try {
+        const res = await axios.get(serverUrl + "/api/questions", {
+          withCredentials: true,
+        });
+        console.log(res);
+        setQuestions(res.data);
+      } catch (error) {
+        setError(error.message);
+        console.error("Error fetching questions", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchQuestions();
+  }, []);
+
   return (
     <div className="w-screen h-screen flex relative">
       {/* Fixed Sidebar */}
@@ -170,20 +171,16 @@ const Dashboard = () => {
           <div id="header">
             <h1 className="text-[32px] font-semibold">Dashboard</h1>
             <p className="text-[gray] text-[16px]">
-              Welcome back $data.user.name! Ready to boost DSA skills
+              Welcome back{" "}
+              <span className="text-gray-600">{userData.name}</span>! Ready to
+              boost DSA skills
             </p>
           </div>
           <div id="quick-actions">
             <h1 className="text-[24px] font-semibold mb-5">Quick actions</h1>
             <div className="flex">
               <CreateButton />
-              <button
-                id="button2"
-                className="bg-gray-200 text-black font-medium px-4 py-2 w-auto mx-2 hover:bg-gray-300 rounded-full"
-                onClick={() => setbuttonClicked(!buttonClicked)}
-              >
-                View all questions
-              </button>
+              <ViewButton />
             </div>
           </div>
           <div id="daily-revision-stats">
@@ -252,8 +249,9 @@ const Dashboard = () => {
                   Card View
                 </button>
               </div>
-              <div>
+              <div className="flex gap-5">
                 <CreateButton />
+                <ViewButton />
               </div>
             </div>
 
