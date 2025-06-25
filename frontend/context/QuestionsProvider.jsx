@@ -19,7 +19,6 @@ export const QuestionsProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [streak, setStreak] = useState(0);
   const { serverUrl } = useContext(AuthDataContext);
-  const [revision, setRevision] = useState(0);
   const fetchQuestions = async () => {
     setLoading(true);
     setError(null);
@@ -75,12 +74,11 @@ export const QuestionsProvider = ({ children }) => {
   };
   //revision
   const handleRevisionHeat = async (questionsId) => {
+    alert("handleRevisionHeat is triggered");
     try {
-      const res = await axios.get(
+      await axios.get(
         serverUrl + `/api/questions/stats/revision/${questionsId}`
       );
-      if (!res) console.log("cannot fetch revision");
-      setRevision(res.data.revision);
     } catch (error) {
       console.log(
         `Error in [@QuestionProvider.jsx line 80-90] ${error.message}`
@@ -103,7 +101,6 @@ export const QuestionsProvider = ({ children }) => {
     updateQuestion,
     fetchQuestions,
     fetchStreak,
-    revision,
     handleRevisionHeat,
   };
 

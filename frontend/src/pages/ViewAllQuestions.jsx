@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { AuthDataContext } from "../../context/AuthContext";
 import CreateButton from "../components/CreateButton";
+import { useQuestions } from "../../context/QuestionsProvider";
 
 const ViewAllQuestions = () => {
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,7 @@ const ViewAllQuestions = () => {
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterSite, setFilterSite] = useState("all");
   const { serverUrl } = useContext(AuthDataContext);
-
+  const { handleRevisionHeat } = useQuestions();
   // Toggle row expansion
   const toggleRowExpansion = (questionId) => {
     const newExpanded = new Set(expandedRows);
@@ -310,6 +311,7 @@ const ViewAllQuestions = () => {
                           rel="noopener noreferrer"
                           className="text-blue-600 hover:text-blue-800 hover:underline font-semibold text-lg mb-2 block"
                           title={question.title}
+                          onClick={() => handleRevisionHeat(question._id)}
                         >
                           {question.title}
                         </a>
@@ -510,7 +512,7 @@ const ViewAllQuestions = () => {
                                 question.revision
                               )}`}
                             >
-                              {question.revision || "N/A"}
+                              {question.revision || "0"}
                             </span>
                           </td>
                           <td className="py-4 px-6">

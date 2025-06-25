@@ -7,6 +7,7 @@ import {
   getDifficultyStats,
   getSiteStats,
   updateQuestion,
+  updateRevision,
 } from "../controllers/question.controller.js";
 import { updateStreak } from "../controllers/streak.controller.js";
 const questionRouter = express.Router();
@@ -18,5 +19,5 @@ questionRouter.patch("/:id", isAuth, updateQuestion);
 questionRouter.get("/streak", isAuth, updateStreak);
 questionRouter.get("/stats/difficulty", isAuth, getDifficultyStats);
 questionRouter.get("/stats/site", isAuth, getSiteStats);
-questionRouter.get("/stats/revision/:id", isAuth, updateQuestion);
+questionRouter.get("/stats/revision/:id", isAuth, updateRevision);
 export default questionRouter;

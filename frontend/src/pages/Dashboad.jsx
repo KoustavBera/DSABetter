@@ -37,7 +37,6 @@ const Dashboard = () => {
     error,
     deleteQuestion,
     streak,
-    revision,
     handleRevisionHeat,
   } = useQuestions();
 

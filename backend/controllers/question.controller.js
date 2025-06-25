@@ -156,7 +156,7 @@ export const updateRevision = async (req, res) => {
 
     //Only  increase if not today
     if (today !== lastRevisionDate) {
-      question.revision += (question.revision || 0) + 1;
+      question.revision = question.revision + 1;
       question.lastRevisionDate = new Date();
       await question.save();
     }
