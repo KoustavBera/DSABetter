@@ -22,6 +22,7 @@ import { useContext } from "react";
 import { AuthDataContext } from "../../context/AuthContext";
 import CreateButton from "../components/CreateButton";
 import ViewButton from "../components/ViewButton";
+import DifficultyChart from "../components/DifficultyChart";
 
 const Dashboard = () => {
   const [buttonClicked, setbuttonClicked] = useState(false);
@@ -194,7 +195,7 @@ const Dashboard = () => {
             </h1>
             <div className="flex gap-4">
               <CalendarComp />
-              <CalendarComp2 />
+              <DifficultyChart />
             </div>
           </div>
         </div>

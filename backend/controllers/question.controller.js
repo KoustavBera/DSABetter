@@ -1,5 +1,5 @@
 import Question from "../models/questionModel.js";
-
+import mongoose from "mongoose";
 // ✅ Get all questions for authenticated user
 export const getAllQuestion = async (req, res) => {
   try {
@@ -118,7 +118,7 @@ export const getDifficultyStats = async (req, res) => {
 
     res.status(200).json(stats);
   } catch (error) {
-    console.error("Difficulty stats error:", err.message);
+    console.error("Difficulty stats error:", error.message);
     res.status(500).json({ message: "Error fetching difficulty stats" });
   }
 };
