@@ -5,6 +5,7 @@ import {
   deleteQuestion,
   getAllQuestion,
   getDifficultyStats,
+  getSiteStats,
   updateQuestion,
 } from "../controllers/question.controller.js";
 import { updateStreak } from "../controllers/streak.controller.js";
@@ -16,4 +17,6 @@ questionRouter.delete("/:id", isAuth, deleteQuestion);
 questionRouter.patch("/:id", isAuth, updateQuestion);
 questionRouter.get("/streak", isAuth, updateStreak);
 questionRouter.get("/stats/difficulty", isAuth, getDifficultyStats);
+questionRouter.get("/stats/site", isAuth, getSiteStats);
+
 export default questionRouter;

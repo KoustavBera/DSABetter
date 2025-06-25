@@ -23,6 +23,7 @@ import { AuthDataContext } from "../../context/AuthContext";
 import CreateButton from "../components/CreateButton";
 import ViewButton from "../components/ViewButton";
 import DifficultyChart from "../components/DifficultyChart";
+import Analytics from "../components/Analytics";
 
 const Dashboard = () => {
   const [buttonClicked, setbuttonClicked] = useState(false);
@@ -621,6 +622,10 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        <div id="Analytics">
+          <Analytics />
         </div>
       </div>
     </div>

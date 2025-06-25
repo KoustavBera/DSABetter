@@ -122,3 +122,22 @@ export const getDifficultyStats = async (req, res) => {
     res.status(500).json({ message: "Error fetching difficulty stats" });
   }
 };
+
+export const getSiteStats = async (req, res) => {
+  try {
+    const stats = await Question.aggregate([
+      {
+        $match: { user: new mongoose.Types.ObjectId(req.userId) },
+      },
+      {
+        $group: {
+          _id: "$site",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    res.status(200).json(stats);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching site stats" });
+  }
+};
