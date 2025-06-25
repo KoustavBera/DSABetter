@@ -74,10 +74,10 @@ export const QuestionsProvider = ({ children }) => {
   };
   //revision
   const handleRevisionHeat = async (questionsId) => {
-    alert("handleRevisionHeat is triggered");
     try {
       await axios.get(
-        serverUrl + `/api/questions/stats/revision/${questionsId}`
+        serverUrl + `/api/questions/stats/revision/${questionsId}`,
+        { withCredentials: true }
       );
     } catch (error) {
       console.log(

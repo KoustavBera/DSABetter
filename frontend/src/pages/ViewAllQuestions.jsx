@@ -459,6 +459,7 @@ const ViewAllQuestions = () => {
                               rel="noopener noreferrer"
                               className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
                               title={question.title}
+                              onClick={() => handleRevisionHeat(question._id)}
                             >
                               {question.title}
                             </a>

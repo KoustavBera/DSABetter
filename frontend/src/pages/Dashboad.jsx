@@ -12,7 +12,7 @@ import {
   MdExpandMore,
   MdExpandLess,
 } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CalendarComp from "../components/CalendarComp";
 import CalendarComp2 from "../components/CalendarComp2";
 import { IoIosArrowDown } from "react-icons/io";
@@ -31,6 +31,8 @@ const Dashboard = () => {
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [viewMode, setViewMode] = useState("table"); // 'table' or 'cards'
   const { serverUrl, userData } = useContext(AuthDataContext);
+  const navigate = useNavigate();
+
   const {
     questions,
     loading,
@@ -114,14 +116,6 @@ const Dashboard = () => {
       alert("Failed to delete question");
     }
   };
-
-  const handleRevisionClick = async (req, res) => {
-    try {
-    } catch (error) {}
-  };
-
-  //revision
-
   return (
     <div className="w-screen h-screen flex relative">
       {/* Fixed Sidebar */}
@@ -130,8 +124,15 @@ const Dashboard = () => {
         id="Sidebar"
       >
         <div className="mb-4 mx-9 mt-4">
-          <h1 className="text-[19px]">DSA Revision</h1>
-          <p className="text-[#7a7a7a]">v1.0</p>
+          <button onClick={() => navigate("/")}>
+            <h1 className="text-[19px]">DSA Revision</h1>
+          </button>
+          <div className="flex gap-10 items-center ">
+            <p className="text-[#7a7a7a]">v1.0</p>
+            <p className="bg-green-100 text-green-600 border-[1px] border-green-600 text-[10px] px-[5px] font-bold py-[1px] rounded-full animate-bounce">
+              Beta
+            </p>
+          </div>
         </div>
         <div className="w-full">
           <ul className="px-3 w-full flex-col justify-center items-center flex gap-5">

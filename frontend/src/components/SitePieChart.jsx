@@ -44,11 +44,11 @@ const SitePieChart = () => {
   }, [serverUrl]);
 
   return (
-    <div className="w-[20rem] h-[300px] bg-white border-[1px] border-[#a0a0a0] rounded-xl p-4">
+    <div className="w-1/2 h-[300px] bg-white shadow rounded-xl p-4">
       <h2 className="text-lg font-semibold mb-4 text-gray-700">
-        Questions by Site
+        Questions By Site
       </h2>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" className="">
         <PieChart>
           <defs>
             <linearGradient id="gradient0" x1="0%" y1="0%" x2="100%" y2="100%">

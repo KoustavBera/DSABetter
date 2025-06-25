@@ -158,6 +158,11 @@ export const updateRevision = async (req, res) => {
     if (today !== lastRevisionDate) {
       question.revision = question.revision + 1;
       question.lastRevisionDate = new Date();
+
+      question.revisionHistory.push({
+        date: new Date(),
+        status: question.status,
+      });
       await question.save();
     }
 
