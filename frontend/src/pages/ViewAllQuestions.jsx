@@ -63,6 +63,14 @@ const ViewAllQuestions = () => {
     }
   };
 
+  const getRevisionHeat = (revision) => {
+    if (revision === 0) return "text-red-600 bg-red-100";
+    if (revision === 1) return "text-red-600 bg-red-100";
+    if (revision === 2) return "text-yellow-600 bg-yellow-100";
+    if (revision === 3) return "text-green-600 bg-green-100";
+    else return "text-purple-600 bg-purple-100";
+  };
+
   // Get status color
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -418,6 +426,9 @@ const ViewAllQuestions = () => {
                         Difficulty
                       </th>
                       <th className="text-left py-4 px-6 font-semibold text-gray-700">
+                        Revision
+                      </th>
+                      <th className="text-left py-4 px-6 font-semibold text-gray-700">
                         Status
                       </th>
                       <th className="text-left py-4 px-6 font-semibold text-gray-700">
@@ -491,6 +502,15 @@ const ViewAllQuestions = () => {
                               )}`}
                             >
                               {question.difficulty || "N/A"}
+                            </span>
+                          </td>
+                          <td className="py-4 px-6">
+                            <span
+                              className={`px-2 py-1 rounded-full text-sm font-medium ${getRevisionHeat(
+                                question.revision
+                              )}`}
+                            >
+                              {question.revision || "N/A"}
                             </span>
                           </td>
                           <td className="py-4 px-6">

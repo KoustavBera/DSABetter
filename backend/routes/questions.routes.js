@@ -18,5 +18,5 @@ questionRouter.patch("/:id", isAuth, updateQuestion);
 questionRouter.get("/streak", isAuth, updateStreak);
 questionRouter.get("/stats/difficulty", isAuth, getDifficultyStats);
 questionRouter.get("/stats/site", isAuth, getSiteStats);
-
+questionRouter.get("/stats/revision/:id", isAuth, updateQuestion);
 export default questionRouter;

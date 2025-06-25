@@ -43,6 +43,13 @@ const questionSchema = new mongoose.Schema(
     nextRevision: {
       type: Date,
     },
+    revision: {
+      type: Number,
+      default: 0,
+    },
+    lastRevisionDate: {
+      type: Date,
+    },
     revisionHistory: [
       {
         date: Date,

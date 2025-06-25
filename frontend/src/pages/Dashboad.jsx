@@ -24,14 +24,22 @@ import CreateButton from "../components/CreateButton";
 import ViewButton from "../components/ViewButton";
 import DifficultyChart from "../components/DifficultyChart";
 import Analytics from "../components/Analytics";
+import axios from "axios";
 
 const Dashboard = () => {
   const [buttonClicked, setbuttonClicked] = useState(false);
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [viewMode, setViewMode] = useState("table"); // 'table' or 'cards'
   const { serverUrl, userData } = useContext(AuthDataContext);
-
-  const { questions, loading, error, deleteQuestion, streak } = useQuestions();
+  const {
+    questions,
+    loading,
+    error,
+    deleteQuestion,
+    streak,
+    revision,
+    handleRevisionHeat,
+  } = useQuestions();
 
   // Add loading state if userData is not available
   if (!userData) {
@@ -107,6 +115,13 @@ const Dashboard = () => {
       alert("Failed to delete question");
     }
   };
+
+  const handleRevisionClick = async (req, res) => {
+    try {
+    } catch (error) {}
+  };
+
+  //revision
 
   return (
     <div className="w-screen h-screen flex relative">
@@ -296,6 +311,7 @@ const Dashboard = () => {
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-800 hover:underline font-semibold text-lg mb-2 block"
                                 title={question.title}
+                                onClick={() => handleRevisionHeat(question._id)}
                               >
                                 {question.title}
                               </a>
