@@ -101,3 +101,24 @@ export const updateQuestion = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+export const getDifficultyStats = async (req, res) => {
+  try {
+    const stats = await Question.aggregate([
+      {
+        $match: { user: new mongoose.Types.ObjectId(req.userId) },
+      },
+      {
+        $group: {
+          _id: "$difficulty",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    res.status(200).json(stats);
+  } catch (error) {
+    console.error("Difficulty stats error:", err.message);
+    res.status(500).json({ message: "Error fetching difficulty stats" });
+  }
+};
