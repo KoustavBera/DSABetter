@@ -14,6 +14,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    lastActiveDate: {
+      type: Date,
+      default: null,
+    },
+    streak: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

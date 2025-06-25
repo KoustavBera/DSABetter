@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { FaCircleChevronLeft } from "react-icons/fa6";
 import { ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useQuestions } from "../../context/QuestionsProvider";
 
 const defaultForm = {
   title: "",
@@ -89,7 +90,7 @@ const CreateQuestion = () => {
   const [selectedSite, setSelectedSite] = useState(null);
   const [customSiteInput, setCustomSiteInput] = useState("");
   const [useCustomSite, setUseCustomSite] = useState(false);
-
+  const { fetchQuestions, fetchStreak } = useQuestions();
   const { serverUrl } = useContext(AuthDataContext);
   const navigate = useNavigate();
 
@@ -144,6 +145,13 @@ const CreateQuestion = () => {
       setSelectedSite(null);
       setCustomSiteInput("");
       setUseCustomSite(false);
+
+      // Fetch updated data
+      await fetchQuestions();
+      await fetchStreak();
+
+      // Now navigate
+      navigate("/dashboard");
     } catch (error) {
       setMessage({ type: "error", text: "Failed to save question." });
     } finally {

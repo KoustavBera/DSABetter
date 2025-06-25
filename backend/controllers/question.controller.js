@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import Question from "../models/questionModel.js";
 
 // ✅ Get all questions for authenticated user
@@ -7,14 +6,7 @@ export const getAllQuestion = async (req, res) => {
     const questions = await Question.find({ user: req.userId }).sort({
       createdAt: -1,
     });
-
-    if (questions.length === 0) {
-      return res
-        .status(200)
-        .json({ message: "No questions found yet", data: [] });
-    }
-
-    res.status(200).json(questions);
+    res.status(200).json(questions); // Always return an array
   } catch (error) {
     console.error("getAllQuestion error:", error.message);
     res

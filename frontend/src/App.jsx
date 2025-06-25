@@ -7,6 +7,7 @@ import Nav from "./components/Nav.jsx";
 import Dashboad from "./pages/Dashboad.jsx";
 import CreateQuestion from "./pages/CreateQuestion.jsx";
 import toast, { Toaster } from "react-hot-toast";
+import ViewAllQuestions from "./pages/ViewAllQuestions.jsx";
 const App = () => {
   const notify = () => toast("Here is your toast.");
   return (
@@ -18,6 +19,7 @@ const App = () => {
         <Route path="/signup" element={<Signup />}></Route>
         <Route path="/dashboard" element={<Dashboad />}></Route>
         <Route path="/create" element={<CreateQuestion />}></Route>
+        <Route path="/view" element={<ViewAllQuestions />}></Route>
       </Routes>
     </div>
   );

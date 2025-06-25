@@ -1,0 +1,99 @@
+// context/QuestionsContext.js
+import React, { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
+import { AuthDataContext } from "./AuthContext";
+
+const QuestionsContext = createContext();
+
+export const useQuestions = () => {
+  const context = useContext(QuestionsContext);
+  if (!context) {
+    throw new Error("useQuestions must be used within a QuestionsProvider");
+  }
+  return context;
+};
+
+export const QuestionsProvider = ({ children }) => {
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [streak, setStreak] = useState(0);
+  const { serverUrl } = useContext(AuthDataContext);
+
+  const fetchQuestions = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.get(`${serverUrl}/api/questions`, {
+        withCredentials: true,
+      });
+      setQuestions(res.data);
+    } catch (error) {
+      setError(error.message);
+      console.error("Error fetching questions", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchStreak = async () => {
+    try {
+      const res = await axios.get(`${serverUrl}/api/questions/streak`, {
+        withCredentials: true,
+      });
+      if (res) {
+        setStreak(res.data.streak);
+        console.log(res.data.streak);
+      }
+    } catch (err) {
+      console.log("streak error");
+    }
+  };
+  const deleteQuestion = async (questionId) => {
+    try {
+      await axios.delete(`${serverUrl}/api/questions/${questionId}`, {
+        withCredentials: true,
+      });
+      setQuestions(questions.filter((q) => q._id !== questionId));
+      return true;
+    } catch (err) {
+      console.error("Error deleting question:", err);
+      throw err;
+    }
+  };
+
+  const addQuestion = (newQuestion) => {
+    setQuestions([...questions, newQuestion]);
+  };
+
+  const updateQuestion = (updatedQuestion) => {
+    setQuestions(
+      questions.map((q) =>
+        q._id === updatedQuestion._id ? updatedQuestion : q
+      )
+    );
+  };
+
+  useEffect(() => {
+    fetchQuestions();
+    fetchStreak();
+  }, [serverUrl]);
+
+  const value = {
+    questions,
+    loading,
+    error,
+    streak,
+    deleteQuestion,
+    addQuestion,
+    updateQuestion,
+    fetchQuestions,
+    fetchStreak,
+  };
+
+  return (
+    <QuestionsContext.Provider value={value}>
+      {children}
+    </QuestionsContext.Provider>
+  );
+};

@@ -4,6 +4,7 @@ import { FaRegQuestionCircle } from "react-icons/fa";
 import { IoCalendarNumberOutline } from "react-icons/io5";
 import { ImStatsDots } from "react-icons/im";
 import { IoSettingsOutline } from "react-icons/io5";
+import { useQuestions } from "../../context/QuestionsProvider";
 import {
   MdKeyboardArrowRight,
   MdEdit,
@@ -16,8 +17,7 @@ import CalendarComp from "../components/CalendarComp";
 import CalendarComp2 from "../components/CalendarComp2";
 import { IoIosArrowDown } from "react-icons/io";
 import { useState } from "react";
-import { useEffect } from "react";
-import axios from "axios";
+
 import { useContext } from "react";
 import { AuthDataContext } from "../../context/AuthContext";
 import CreateButton from "../components/CreateButton";
@@ -25,12 +25,20 @@ import ViewButton from "../components/ViewButton";
 
 const Dashboard = () => {
   const [buttonClicked, setbuttonClicked] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [questions, setQuestions] = useState([]);
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [viewMode, setViewMode] = useState("table"); // 'table' or 'cards'
   const { serverUrl, userData } = useContext(AuthDataContext);
+
+  const { questions, loading, error, deleteQuestion, streak } = useQuestions();
+
+  // Add loading state if userData is not available
+  if (!userData) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
 
   // Toggle row expansion
   const toggleRowExpansion = (questionId) => {
@@ -41,25 +49,6 @@ const Dashboard = () => {
       newExpanded.add(questionId);
     }
     setExpandedRows(newExpanded);
-  };
-
-  // Delete question function
-  const handleDeleteQuestion = async (questionId) => {
-    if (!window.confirm("Are you sure you want to delete this question?")) {
-      return;
-    }
-
-    try {
-      await axios.delete(`${serverUrl}/api/questions/${questionId}`, {
-        withCredentials: true,
-      });
-
-      // Remove question from local state
-      setQuestions(questions.filter((q) => q._id !== questionId));
-    } catch (err) {
-      console.error("Error deleting question:", err);
-      alert("Failed to delete question");
-    }
   };
 
   // Get difficulty color
@@ -105,24 +94,17 @@ const Dashboard = () => {
     return topics;
   };
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get(serverUrl + "/api/questions", {
-          withCredentials: true,
-        });
-        console.log(res);
-        setQuestions(res.data);
-      } catch (error) {
-        setError(error.message);
-        console.error("Error fetching questions", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchQuestions();
-  }, []);
+  const handleDeleteQuestion = async (questionId) => {
+    if (!window.confirm("Are you sure you want to delete this question?")) {
+      return;
+    }
+
+    try {
+      await deleteQuestion(questionId);
+    } catch (err) {
+      alert("Failed to delete question");
+    }
+  };
 
   return (
     <div className="w-screen h-screen flex relative">
@@ -172,8 +154,8 @@ const Dashboard = () => {
             <h1 className="text-[32px] font-semibold">Dashboard</h1>
             <p className="text-[gray] text-[16px]">
               Welcome back{" "}
-              <span className="text-gray-600">{userData.name}</span>! Ready to
-              boost DSA skills
+              <span className="text-gray-600">{userData?.name || "User"}</span>!
+              Ready to boost DSA skills
             </p>
           </div>
           <div id="quick-actions">
@@ -201,8 +183,8 @@ const Dashboard = () => {
                 <p className="font-bold text-[22px]">{questions.length}</p>
               </div>
               <div className="h-28 w-72 rounded-xl shadow-md border-[1px] border-slate-300 flex flex-col items-start justify-start px-10 py-8">
-                <h1 className="text-[16px] font-medium">Streak</h1>
-                <p className="font-bold text-[22px]">0</p>
+                <h1 className="text-[16px] font-medium">Streak🔥</h1>
+                <p className="font-bold text-[22px]">{streak}</p>
               </div>
             </div>
           </div>
