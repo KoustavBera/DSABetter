@@ -141,3 +141,29 @@ export const getSiteStats = async (req, res) => {
     res.status(500).json({ message: "Error fetching site stats" });
   }
 };
+
+export const updateRevision = async (req, res) => {
+  try {
+    const question = await Question.findById(req.params.id);
+
+    if (!question)
+      return res.status(404).json({
+        message: "Question not found",
+      });
+
+    const today = new Date().toDateString();
+    const lastRevisionDate = question.lastRevisionDate?.toDateString();
+
+    //Only  increase if not today
+    if (today !== lastRevisionDate) {
+      question.revision += (question.revision || 0) + 1;
+      question.lastRevisionDate = new Date();
+      await question.save();
+    }
+
+    res.status(200).json({ revision: question.revision });
+  } catch (error) {
+    console.log("Revision update error", error.message);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
