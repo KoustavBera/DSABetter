@@ -44,8 +44,8 @@ const SitePieChart = () => {
   }, [serverUrl]);
 
   return (
-    <div className="w-1/2 h-[300px] bg-white shadow rounded-xl p-4">
-      <h2 className="text-lg font-semibold mb-4 text-gray-700">
+    <div className="w-1/2 h-[500px] bg-white border-[1px] border-slate-300 rounded-xl p-4">
+      <h2 className="text-md mb-4 font-semibold text-black ">
         Questions By Site
       </h2>
       <ResponsiveContainer width="100%" height="100%" className="">

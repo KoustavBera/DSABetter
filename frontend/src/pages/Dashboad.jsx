@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { MdHomeFilled } from "react-icons/md";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { IoCalendarNumberOutline } from "react-icons/io5";
@@ -31,8 +31,8 @@ const Dashboard = () => {
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [viewMode, setViewMode] = useState("table"); // 'table' or 'cards'
   const { serverUrl, userData } = useContext(AuthDataContext);
+  const [todayQuestionSolved, settodayQuestionSolved] = useState([]);
   const navigate = useNavigate();
-
   const {
     questions,
     loading,
@@ -41,6 +41,22 @@ const Dashboard = () => {
     streak,
     handleRevisionHeat,
   } = useQuestions();
+
+  useEffect(() => {
+    const getTodaySolved = async () => {
+      try {
+        const res = await axios.get(
+          serverUrl + "/api/questions/stats/revisionHistory",
+          {
+            withCredentials: true,
+          }
+        );
+        settodayQuestionSolved(res.data[1].count);
+      } catch (error) {}
+    };
+    getTodaySolved();
+  }, []);
+  console.log(todayQuestionSolved);
 
   // Add loading state if userData is not available
   if (!userData) {
@@ -116,11 +132,12 @@ const Dashboard = () => {
       alert("Failed to delete question");
     }
   };
+
   return (
     <div className="w-screen h-screen flex relative">
       {/* Fixed Sidebar */}
       <div
-        className="w-1/4 bg-white h-full flex flex-col items-start justify-start fixed left-0 top-0 z-10"
+        className="w-1/4 bg-white   h-full flex flex-col items-start justify-start fixed left-0 top-0 z-10"
         id="Sidebar"
       >
         <div className="mb-4 mx-9 mt-4">
@@ -136,25 +153,50 @@ const Dashboard = () => {
         </div>
         <div className="w-full">
           <ul className="px-3 w-full flex-col justify-center items-center flex gap-5">
-            <li className="w-[80%] flex items-center select-none gap-4 px-4 py-2 hover:bg-[#dbdbdbe1] ml-8 rounded-full">
-              <MdHomeFilled className="text-[24px]" />
-              <div>Dashboard</div>
+            <li className="w-[80%] flex items-center  px-4 py-2 hover:bg-[#dbdbdbe1] ml-8 rounded-full">
+              <a
+                href="#Dashboard"
+                className=" flex items-center select-none gap-4 "
+              >
+                <MdHomeFilled className="text-[24px]" />
+                <div>Dashboard</div>
+              </a>
             </li>
             <li className="w-[80%] flex items-center select-none gap-4 px-4 py-2 hover:bg-[#dbdbdbe1] ml-8 rounded-full">
-              <FaRegQuestionCircle className="text-[24px]" />
-              <div>Questions</div>
+              <a
+                href="#Manage-Questions"
+                className=" flex items-center select-none gap-4 "
+              >
+                <FaRegQuestionCircle className="text-[24px]" />
+                <div>Questions</div>
+              </a>
             </li>
             <li className="w-[80%] flex items-center select-none gap-4 px-4 py-2 hover:bg-[#dbdbdbe1] ml-8 rounded-full">
-              <IoCalendarNumberOutline className="text-[24px]" />
-              <div>Calendar</div>
+              <a
+                href="#Calendar"
+                className=" flex items-center select-none gap-4 "
+              >
+                <IoCalendarNumberOutline className="text-[24px]" />
+                <div>Calendar</div>
+              </a>
             </li>
             <li className="w-[80%] flex items-center select-none gap-4 px-4 py-2 hover:bg-[#dbdbdbe1] ml-8 rounded-full">
-              <ImStatsDots className="text-[24px]" />
-              <div>Analytics</div>
+              <a
+                href="#Analytics"
+                className=" flex items-center select-none gap-4 "
+              >
+                <ImStatsDots className="text-[24px]" />
+                <div>Analytics</div>
+              </a>
             </li>
-            <li className="w-[80%] flex items-center select-none gap-4 px-4 py-2 hover:bg-[#dbdbdbe1] ml-8 rounded-full">
-              <IoSettingsOutline className="text-[24px]" />
-              <div>Settings</div>
+            <li className="w-[80%] px-4 py-2 hover:bg-[#dbdbdbe1] ml-8 rounded-full">
+              <button
+                className="flex items-center select-none gap-4 "
+                onClick={() => navigate("/settings")}
+              >
+                <IoSettingsOutline className="text-[24px]" />
+                <div>Settings</div>
+              </button>
             </li>
           </ul>
         </div>
@@ -164,9 +206,10 @@ const Dashboard = () => {
       <div
         className="w-3/4 bg-white min-h-screen py-8 flex flex-col gap-40 ml-[25%] overflow-y-auto"
         id="Main-Content"
+        style={{ scrollBehavior: "smooth" }}
       >
         {/* Dashboard Section */}
-        <div id="Dashboard" className="w-full flex flex-col gap-8">
+        <section id="Dashboard" className="w-full flex flex-col gap-8">
           <div id="header">
             <h1 className="text-[32px] font-semibold">Dashboard</h1>
             <p className="text-[gray] text-[16px]">
@@ -191,12 +234,10 @@ const Dashboard = () => {
                 <h1 className="text-[16px] font-medium">
                   Questions Solved Today
                 </h1>
-                <p className="font-bold text-[22px]">5</p>
+                <p className="font-bold text-[22px]">{todayQuestionSolved}</p>
               </div>
               <div className="h-28 w-72 rounded-xl shadow-md border-[1px] border-slate-300 flex flex-col items-start justify-start px-10 py-8">
-                <h1 className="text-[16px] font-medium">
-                  Total Questions Solved
-                </h1>
+                <h1 className="text-[16px] font-medium">Total Questions</h1>
                 <p className="font-bold text-[22px]">{questions.length}</p>
               </div>
               <div className="h-28 w-72 rounded-xl shadow-md border-[1px] border-slate-300 flex flex-col items-start justify-start px-10 py-8">
@@ -214,10 +255,10 @@ const Dashboard = () => {
               <DifficultyChart />
             </div>
           </div>
-        </div>
+        </section>
 
         {/*--------------- ALL Questions Section --------------------*/}
-        <div id="Manage-Questions">
+        <section id="Manage-Questions">
           <h1 className="text-[32px] font-semibold">All Questions</h1>
           <div className="mt-8 space-y-4">
             <p className="text-gray-600">
@@ -231,7 +272,7 @@ const Dashboard = () => {
                   onClick={() => setViewMode("table")}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                     viewMode === "table"
-                      ? "bg-blue-600 text-white"
+                      ? "bg-slate-800 text-white"
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 >
@@ -298,7 +339,7 @@ const Dashboard = () => {
                   questions.length > 0 &&
                   viewMode === "cards" && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {questions.map((question) => (
+                      {questions.slice(0, 4).map((question) => (
                         <div
                           key={question._id}
                           className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6"
@@ -411,6 +452,17 @@ const Dashboard = () => {
                       ))}
                     </div>
                   )}
+                {questions.length > 5 && (
+                  <div className="mt-4 p-4 text-center text-gray-500 bg-gray-50 rounded-lg border">
+                    Showing 5 of {questions.length} questions.
+                    <button
+                      onClick={() => navigate("/view")}
+                      className="text-blue-600 hover:text-blue-800 ml-1"
+                    >
+                      View all →
+                    </button>
+                  </div>
+                )}
 
                 {/* Enhanced Table View */}
                 {!loading &&
@@ -448,7 +500,7 @@ const Dashboard = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {questions.map((question, index) => (
+                          {questions.slice(0, 5).map((question, index) => (
                             <React.Fragment key={question._id}>
                               <tr
                                 className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
@@ -462,6 +514,9 @@ const Dashboard = () => {
                                     rel="noopener noreferrer"
                                     className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
                                     title={question.title}
+                                    onClick={() =>
+                                      handleRevisionHeat(question._id)
+                                    }
                                   >
                                     {question.title}
                                   </a>
@@ -614,6 +669,24 @@ const Dashboard = () => {
                             </React.Fragment>
                           ))}
                         </tbody>
+                        {questions.length > 5 && (
+                          <tfoot>
+                            <tr>
+                              <td
+                                colSpan="8"
+                                className="py-3 px-4 text-center text-gray-500 bg-gray-50"
+                              >
+                                Showing 5 of {questions.length} questions.
+                                <button
+                                  onClick={() => navigate("/view")}
+                                  className="text-blue-600 hover:text-blue-800 ml-1"
+                                >
+                                  View all →
+                                </button>
+                              </td>
+                            </tr>
+                          </tfoot>
+                        )}
                       </table>
                     </div>
                   )}
@@ -638,11 +711,11 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div id="Analytics">
+        <section id="Analytics">
           <Analytics />
-        </div>
+        </section>
       </div>
     </div>
   );

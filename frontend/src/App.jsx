@@ -8,6 +8,8 @@ import CreateQuestion from "./pages/CreateQuestion.jsx";
 import toast, { Toaster } from "react-hot-toast";
 import ViewAllQuestions from "./pages/ViewAllQuestions.jsx";
 import UpdateQuestion from "./pages/UpdateQuestion.jsx";
+import { Settings } from "lucide-react";
+import SettingComp from "./pages/SettingComp.jsx";
 const App = () => {
   const notify = () => toast("Here is your toast.");
   return (
@@ -21,6 +23,7 @@ const App = () => {
         <Route path="/create" element={<CreateQuestion />}></Route>
         <Route path="/view" element={<ViewAllQuestions />}></Route>
         <Route path="/edit" element={<UpdateQuestion />}></Route>
+        <Route path="/settings" element={<SettingComp />}></Route>
       </Routes>
     </div>
   );

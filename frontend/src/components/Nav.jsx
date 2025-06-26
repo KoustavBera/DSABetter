@@ -3,6 +3,7 @@ import logo from "../assets/logo.png";
 import { CgProfile } from "react-icons/cg";
 import { useNavigate } from "react-router-dom";
 import { AuthDataContext } from "../../context/AuthContext";
+import DSABetter from "../assets/DSABetter.png";
 import axios from "axios";
 
 const Nav = () => {
@@ -55,9 +56,8 @@ const Nav = () => {
         <div>
           <h1 className="font-bold text-[black] text-2xl flex justify-center items-center gap-2 ">
             <span>
-              <img src={logo} alt="" className="w-[20px]" />
+              <img src={DSABetter} alt="" className="w-[5rem]" />
             </span>
-            DSABetter
           </h1>
         </div>
         <div>

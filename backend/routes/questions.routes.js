@@ -10,7 +10,10 @@ import {
   updateRevision,
 } from "../controllers/question.controller.js";
 import { updateStreak } from "../controllers/streak.controller.js";
-import { getRevisionHistoryStats } from "../controllers/revision.controller.js";
+import {
+  getDailyGrowth,
+  getRevisionHistoryStats,
+} from "../controllers/revision.controller.js";
 const questionRouter = express.Router();
 
 questionRouter.get("/", isAuth, getAllQuestion);
@@ -22,4 +25,5 @@ questionRouter.get("/stats/difficulty", isAuth, getDifficultyStats);
 questionRouter.get("/stats/site", isAuth, getSiteStats);
 questionRouter.get("/stats/revision/:id", isAuth, updateRevision);
 questionRouter.get("/stats/revisionHistory", isAuth, getRevisionHistoryStats);
+questionRouter.get("/stats/growth", isAuth, getDailyGrowth);
 export default questionRouter;

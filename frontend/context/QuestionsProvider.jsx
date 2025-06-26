@@ -42,7 +42,6 @@ export const QuestionsProvider = ({ children }) => {
       });
       if (res) {
         setStreak(res.data.streak);
-        console.log(res.data.streak);
       }
     } catch (err) {
       console.log("streak error");
