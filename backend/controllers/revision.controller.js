@@ -90,3 +90,90 @@ export const getDailyGrowth = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const getRevisionHistoryStatsWeekly = async (req, res) => {
+  try {
+    const now = new Date();
+    const startDate = new Date(now);
+    startDate.setDate(now.getDate() - 28);
+
+    const dailyStats = await Question.aggregate([
+      {
+        $match: {
+          user: new mongoose.Types.ObjectId(req.userId),
+        },
+      },
+      {
+        $unwind: "$revisionHistory",
+      },
+      {
+        $match: {
+          "revisionHistory.date": {
+            $gte: startDate,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$revisionHistory.date",
+            },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+    ]);
+    /*
+
+[
+dailyStats:
+  { _id: "2025-06-01", count: 2 },
+  { _id: "2025-06-03", count: 4 },
+  { _id: "2025-06-04", count: 1 },
+  { _id: "2025-06-07", count: 3 }
+]
+*/
+
+    // objectification
+    const dateToCount = {};
+    dailyStats.forEach(({ _id, count }) => {
+      dateToCount[_id] = count;
+    });
+
+    /**
+     * dateToCount (object)
+     * {
+  "2025-06-01": 2,
+  "2025-06-03": 4,
+  "2025-06-04": 1,
+  "2025-06-07": 3
+}
+
+     */
+    const weeklyStats = [
+      { week: "Week 1", count: 0 },
+      { week: "Week 2", count: 0 },
+      { week: "Week 3", count: 0 },
+      { week: "Week 4", count: 0 },
+    ];
+
+    //now loop all 28 days and make offsets week1,week2,...3
+    for (let i = 27; i >= 0; i--) {
+      const date = new Date(now); //today
+      date.setDate(now.getDate() - i); //at first 28 days ago
+      const isoDate = date.toISOString().split("T")[0];
+
+      const weekIndex = Math.floor((27 - i) / 7); //0 to 3
+      weeklyStats[weekIndex].count += dateToCount[isoDate] || 0;
+    }
+    res.status(200).json(weeklyStats);
+  } catch (error) {
+    console.error("Revision history stats error:", error.message);
+    res.status(500).json({ message: "Failed to fetch revision stats" });
+  }
+};

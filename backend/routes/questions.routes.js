@@ -13,6 +13,7 @@ import { updateStreak } from "../controllers/streak.controller.js";
 import {
   getDailyGrowth,
   getRevisionHistoryStats,
+  getRevisionHistoryStatsWeekly,
 } from "../controllers/revision.controller.js";
 const questionRouter = express.Router();
 
@@ -26,4 +27,5 @@ questionRouter.get("/stats/site", isAuth, getSiteStats);
 questionRouter.get("/stats/revision/:id", isAuth, updateRevision);
 questionRouter.get("/stats/revisionHistory", isAuth, getRevisionHistoryStats);
 questionRouter.get("/stats/growth", isAuth, getDailyGrowth);
+questionRouter.get("/stats/week", isAuth, getRevisionHistoryStatsWeekly);
 export default questionRouter;

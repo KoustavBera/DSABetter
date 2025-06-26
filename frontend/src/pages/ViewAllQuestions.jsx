@@ -7,6 +7,7 @@ import axios from "axios";
 import { AuthDataContext } from "../../context/AuthContext";
 import CreateButton from "../components/CreateButton";
 import { useQuestions } from "../../context/QuestionsProvider";
+import { useEditModal } from "../../context/EditModalProvider";
 
 const ViewAllQuestions = () => {
   const [loading, setLoading] = useState(false);
@@ -20,6 +21,7 @@ const ViewAllQuestions = () => {
   const [filterSite, setFilterSite] = useState("all");
   const { serverUrl } = useContext(AuthDataContext);
   const { handleRevisionHeat } = useQuestions();
+  const { openModal } = useEditModal();
   // Toggle row expansion
   const toggleRowExpansion = (questionId) => {
     const newExpanded = new Set(expandedRows);
@@ -339,6 +341,7 @@ const ViewAllQuestions = () => {
                         <button
                           className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
                           title="Edit Question"
+                          onClick={() => openModal(question)}
                         >
                           <MdEdit size={16} />
                         </button>
@@ -571,6 +574,7 @@ const ViewAllQuestions = () => {
                               <button
                                 className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
                                 title="Edit Question"
+                                onClick={() => openModal(question)}
                               >
                                 <MdEdit size={16} />
                               </button>

@@ -10,21 +10,23 @@ import ViewAllQuestions from "./pages/ViewAllQuestions.jsx";
 import UpdateQuestion from "./pages/UpdateQuestion.jsx";
 import { Settings } from "lucide-react";
 import SettingComp from "./pages/SettingComp.jsx";
+import { EditModalProvider } from "../context/EditModalProvider.jsx";
 const App = () => {
-  const notify = () => toast("Here is your toast.");
   return (
     <div>
       <Toaster position="top-right" reverseOrder={false} />
-      <Routes>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/signup" element={<Signup />}></Route>
-        <Route path="/dashboard" element={<Dashboad />}></Route>
-        <Route path="/create" element={<CreateQuestion />}></Route>
-        <Route path="/view" element={<ViewAllQuestions />}></Route>
-        <Route path="/edit" element={<UpdateQuestion />}></Route>
-        <Route path="/settings" element={<SettingComp />}></Route>
-      </Routes>
+      <EditModalProvider>
+        <Routes>
+          <Route path="/" element={<Home />}></Route>
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/signup" element={<Signup />}></Route>
+          <Route path="/dashboard" element={<Dashboad />}></Route>
+          <Route path="/create" element={<CreateQuestion />}></Route>
+          <Route path="/view" element={<ViewAllQuestions />}></Route>
+          <Route path="/edit" element={<UpdateQuestion />}></Route>
+          <Route path="/settings" element={<SettingComp />}></Route>
+        </Routes>
+      </EditModalProvider>
     </div>
   );
 };

@@ -17,7 +17,7 @@ import CalendarComp from "../components/CalendarComp";
 import CalendarComp2 from "../components/CalendarComp2";
 import { IoIosArrowDown } from "react-icons/io";
 import { useState } from "react";
-
+import { useEditModal } from "../../context/EditModalProvider.jsx";
 import { useContext } from "react";
 import { AuthDataContext } from "../../context/AuthContext";
 import CreateButton from "../components/CreateButton";
@@ -27,6 +27,7 @@ import Analytics from "../components/Analytics";
 import axios from "axios";
 
 const Dashboard = () => {
+  const { openModal } = useEditModal();
   const [buttonClicked, setbuttonClicked] = useState(false);
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [viewMode, setViewMode] = useState("table"); // 'table' or 'cards'
@@ -380,6 +381,7 @@ const Dashboard = () => {
                               <button
                                 className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
                                 title="Edit Question"
+                                onClick={() => openModal(question)}
                               >
                                 <MdEdit size={16} />
                               </button>
@@ -621,6 +623,7 @@ const Dashboard = () => {
                                     <button
                                       className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
                                       title="Edit Question"
+                                      onClick={() => openModal(question)}
                                     >
                                       <MdEdit size={16} />
                                     </button>
