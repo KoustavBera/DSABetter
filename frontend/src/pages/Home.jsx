@@ -10,13 +10,23 @@ import {
   Plus,
   Search,
   TrendingUp,
+  MessageSquare,
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Nav from "../components/Nav";
-const DSABetterLanding = () => {
+import { Link, useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
+
+const Home = () => {
   const heroRef = useRef(null);
   const featuresRef = useRef(null);
-  const ctaRef = useRef(null);
+  const testimonialRef = useRef(null);
+  const navigate = useNavigate();
+  const [openFAQ, setOpenFAQ] = React.useState(null);
+
   useEffect(() => {
     const tl = gsap.timeline();
 
@@ -46,17 +56,6 @@ const DSABetterLanding = () => {
         },
         "-=0.6"
       )
-      // 🚫 REMOVE THIS block
-      // .from(
-      //   ".hero-buttons",
-      //   {
-      //     duration: 0.8,
-      //     y: 40,
-      //     opacity: 0,
-      //     ease: "power3.out",
-      //   },
-      //   "-=0.4"
-      // )
       .from(
         ".hero-stats",
         {
@@ -71,9 +70,9 @@ const DSABetterLanding = () => {
 
     gsap.registerPlugin(ScrollTrigger);
 
-    gsap.from(".cta-content", {
+    gsap.from(".testimonial-content", {
       scrollTrigger: {
-        trigger: ctaRef.current,
+        trigger: testimonialRef.current,
         start: "top 80%",
       },
       duration: 1,
@@ -151,6 +150,48 @@ const DSABetterLanding = () => {
     },
   ];
 
+  const faqs = [
+    {
+      question: "What is DSABetter?",
+      answer:
+        "DSABetter is a platform designed to help you master Data Structures & Algorithms (DSA) through intelligent revision tracking, analytics, and question management.",
+    },
+    {
+      question: "How does the revision system work?",
+      answer:
+        "DSABetter uses several gamification to help you revise and track your confidence level. On each question you add its revision count is increased for the day if you click on it. A revision count of 1 is assumed to be newbie level and a revision count of more than 3 is considered safe.",
+    },
+    {
+      question: "Can I add my own DSA questions?",
+      answer:
+        "Yes! You can add, organize, and track your own DSA questions, along with notes and revision status.",
+    },
+    {
+      question: "What analytics are available?",
+      answer:
+        "The app provides progress charts, revision streaks, and difficulty breakdowns to help you monitor your improvement over time.",
+    },
+    {
+      question: "Is DSABetter free to use?",
+      answer:
+        "Yes, DSABetter is currently free and open-source. You can also view the code and contribute on GitHub.",
+    },
+    {
+      question: "How do I get started?",
+      answer:
+        'Simply click "Start Revising Now" on the homepage to sign up or log in and begin your DSA journey.',
+    },
+    {
+      question: "Who can I contact for support?",
+      answer:
+        'For support or feedback, use the "Contact" link in the footer or open an issue on our GitHub repository.',
+    },
+  ];
+
+  const toggleFAQ = (index) => {
+    setOpenFAQ(openFAQ === index ? null : index);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
       <Nav />
@@ -190,6 +231,7 @@ const DSABetterLanding = () => {
               className="bg-gray-900 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-800 transition-all flex items-center justify-center group shadow-lg"
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.98 }}
+              onClick={() => navigate("/login")}
             >
               Start Revising Now
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -201,9 +243,12 @@ const DSABetterLanding = () => {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.98 }}
             >
-              View Demo
+              <Link to="https://github.com/KoustavBera/DSABetter/tree/main">
+                View Demo
+              </Link>
             </motion.button>
           </motion.div>
+
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
             {stats.map((stat, index) => (
@@ -406,68 +451,109 @@ const DSABetterLanding = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section ref={ctaRef} className="px-6 py-20">
+      {/* Testimonial Section */}
+      <section ref={testimonialRef} className="px-6 py-20 bg-white">
         <div className="max-w-5xl mx-auto text-center">
           <motion.div
-            className="cta-content bg-white rounded-2xl p-16 border border-gray-200 shadow-lg"
+            className="testimonial-content bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-16 border border-gray-200 shadow-lg"
             whileHover={{ y: -5 }}
           >
+            <div className="flex justify-center mb-6">
+              <div className="bg-gray-900 text-white p-4 rounded-full">
+                <MessageSquare className="w-8 h-8" />
+              </div>
+            </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
-              Ready to Level Up Your
-              <span className="block mt-2">DSA Skills?</span>
+              Share Your Success Story
             </h2>
             <p className="text-xl text-gray-600 mb-10 max-w-3xl mx-auto">
-              Join developers who have transformed their coding interview
-              preparation with intelligent revision and comprehensive analytics.
+              Help other developers by sharing your experience with DSABetter.
+              Your testimonial could inspire someone to start their coding
+              journey!
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <motion.button
-                className="bg-gray-900 text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-gray-800 transition-all inline-flex items-center group shadow-lg"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Start Your Journey
-                <CheckCircle className="ml-3 w-5 h-5 group-hover:scale-110 transition-transform" />
-              </motion.button>
-              <motion.button
-                className="border-2 border-gray-300 text-gray-700 px-10 py-4 rounded-lg text-lg font-semibold hover:border-gray-900 hover:text-gray-900 transition-all"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Watch Demo
-              </motion.button>
-            </div>
+            <motion.a
+              href="https://docs.google.com/forms/d/e/1FAIpQLSfO0Tb9RYotsWI2nmXH7asTYLTyZ9Z8nPccEneCpAaqUy0BiQ/viewform?usp=header"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-gray-900 text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-gray-800 transition-all inline-flex items-center group shadow-lg"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Give a Testimonial
+              <ExternalLink className="ml-3 w-5 h-5 group-hover:scale-110 transition-transform" />
+            </motion.a>
           </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="px-6 py-12 bg-gray-900 text-white">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="text-2xl font-bold mb-4">DSABetter</div>
-          <p className="text-gray-400 mb-6 max-w-2xl mx-auto">
-            Empowering developers to master Data Structures & Algorithms through
-            intelligent practice and revision.
-          </p>
-          <div className="flex justify-center space-x-8 text-sm text-gray-400 mb-6">
-            <a href="#" className="hover:text-white transition-colors">
-              Privacy Policy
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              Terms of Service
-            </a>
-            <a href="#" className="hover:text-white transition-colors">
-              Contact
-            </a>
-          </div>
-          <div className="text-gray-500 text-sm">
-            © 2025 DSABetter. All rights reserved.
+      {/* FAQ Section */}
+      <section className="px-6 py-20 bg-gray-50">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Get answers to common questions about DSABetter
+            </p>
+          </motion.div>
+
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <motion.div
+                key={index}
+                className="bg-white rounded-xl border border-gray-200 overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+              >
+                <button
+                  className="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+                  onClick={() => toggleFAQ(index)}
+                >
+                  <h3 className="text-lg font-semibold text-gray-900 pr-4">
+                    {faq.question}
+                  </h3>
+                  <div className="flex-shrink-0">
+                    {openFAQ === index ? (
+                      <ChevronUp className="w-5 h-5 text-gray-600" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-gray-600" />
+                    )}
+                  </div>
+                </button>
+                <motion.div
+                  initial={false}
+                  animate={{
+                    height: openFAQ === index ? "auto" : 0,
+                    opacity: openFAQ === index ? 1 : 0,
+                  }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden"
+                >
+                  <div className="px-8 pb-6">
+                    <p className="text-gray-600 leading-relaxed">
+                      {faq.answer}
+                    </p>
+                  </div>
+                </motion.div>
+              </motion.div>
+            ))}
           </div>
         </div>
-      </footer>
+      </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
 
-export default DSABetterLanding;
+export default Home;

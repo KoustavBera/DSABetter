@@ -19,9 +19,12 @@ const ViewAllQuestions = () => {
   const [filterDifficulty, setFilterDifficulty] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   const [filterSite, setFilterSite] = useState("all");
+  const [customSiteSearch, setCustomSiteSearch] = useState(""); // New state for custom site search
+  const [isCustomSiteMode, setIsCustomSiteMode] = useState(false); // New state to track custom mode
   const { serverUrl } = useContext(AuthDataContext);
   const { handleRevisionHeat } = useQuestions();
   const { openModal } = useEditModal();
+
   // Toggle row expansion
   const toggleRowExpansion = (questionId) => {
     const newExpanded = new Set(expandedRows);
@@ -49,6 +52,19 @@ const ViewAllQuestions = () => {
     } catch (err) {
       console.error("Error deleting question:", err);
       alert("Failed to delete question");
+    }
+  };
+
+  // Handle site filter change
+  const handleSiteFilterChange = (value) => {
+    if (value === "custom") {
+      setIsCustomSiteMode(true);
+      setFilterSite("custom");
+      setCustomSiteSearch("");
+    } else {
+      setIsCustomSiteMode(false);
+      setFilterSite(value);
+      setCustomSiteSearch("");
     }
   };
 
@@ -113,9 +129,19 @@ const ViewAllQuestions = () => {
         filterStatus === "all" ||
         question.status?.toLowerCase() === filterStatus.toLowerCase();
 
-      const matchesSite =
-        filterSite === "all" ||
-        question.site?.toLowerCase() === filterSite.toLowerCase();
+      // Updated site matching logic for custom search
+      const matchesSite = (() => {
+        if (filterSite === "all") return true;
+        if (filterSite === "custom") {
+          return (
+            customSiteSearch === "" ||
+            question.site
+              ?.toLowerCase()
+              .includes(customSiteSearch.toLowerCase())
+          );
+        }
+        return question.site?.toLowerCase() === filterSite.toLowerCase();
+      })();
 
       return matchesSearch && matchesDifficulty && matchesStatus && matchesSite;
     });
@@ -125,6 +151,16 @@ const ViewAllQuestions = () => {
   const getUniqueValues = (field) => {
     const values = questions.map((q) => q[field]).filter(Boolean);
     return [...new Set(values)];
+  };
+
+  // Clear all filters function
+  const clearAllFilters = () => {
+    setSearchTerm("");
+    setFilterDifficulty("all");
+    setFilterStatus("all");
+    setFilterSite("all");
+    setCustomSiteSearch("");
+    setIsCustomSiteMode(false);
   };
 
   // Fetch questions
@@ -217,34 +253,50 @@ const ViewAllQuestions = () => {
                 <option value="unsolved">Unsolved</option>
               </select>
 
-              {/* Site Filter */}
-              <select
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
-                value={filterSite}
-                onChange={(e) => setFilterSite(e.target.value)}
-              >
-                <option value="all">All Sites</option>
-                {getUniqueValues("site").map((site) => (
-                  <option key={site} value={site}>
-                    {site}
-                  </option>
-                ))}
-              </select>
+              {/* Site Filter with Custom Option */}
+              {isCustomSiteMode ? (
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search sites..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none pr-8"
+                    value={customSiteSearch}
+                    onChange={(e) => setCustomSiteSearch(e.target.value)}
+                  />
+                  <button
+                    onClick={() => handleSiteFilterChange("all")}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    title="Switch back to dropdown"
+                  >
+                    ×
+                  </button>
+                </div>
+              ) : (
+                <select
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                  value={filterSite}
+                  onChange={(e) => handleSiteFilterChange(e.target.value)}
+                >
+                  <option value="all">All Sites</option>
+                  {getUniqueValues("site").map((site) => (
+                    <option key={site} value={site}>
+                      {site}
+                    </option>
+                  ))}
+                  <option value="custom">🔍 Custom Search...</option>
+                </select>
+              )}
             </div>
 
             {/* Clear Filters */}
             {(searchTerm ||
               filterDifficulty !== "all" ||
               filterStatus !== "all" ||
-              filterSite !== "all") && (
+              filterSite !== "all" ||
+              customSiteSearch) && (
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <button
-                  onClick={() => {
-                    setSearchTerm("");
-                    setFilterDifficulty("all");
-                    setFilterStatus("all");
-                    setFilterSite("all");
-                  }}
+                  onClick={clearAllFilters}
                   className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                 >
                   Clear all filters

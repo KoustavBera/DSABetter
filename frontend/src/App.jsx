@@ -13,6 +13,7 @@ import SettingComp from "./pages/SettingComp.jsx";
 import { EditModalProvider } from "../context/EditModalProvider.jsx";
 import About from "./pages/About.jsx";
 import { AuthDataContext } from "../context/AuthContext.jsx";
+import Footer from "./components/Footer.jsx";
 
 const App = () => {
   const { userData } = useContext(AuthDataContext);

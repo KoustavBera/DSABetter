@@ -24,12 +24,6 @@ const Nav = () => {
         </div>
         <div>
           <ul className="text-lg flex gap-5 px-3">
-            <li>
-              <button onClick={() => navigate("/")}>Home</button>
-            </li>
-            <li>
-              <button>About us</button>
-            </li>
             {!userData ? (
               <>
                 <li>
