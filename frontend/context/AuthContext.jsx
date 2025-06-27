@@ -27,6 +27,7 @@ const AuthContext = ({ children }) => {
     serverUrl,
     userData,
     setUserData,
+    getUserData,
   };
 
   useEffect(() => {

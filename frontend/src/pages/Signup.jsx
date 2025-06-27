@@ -4,6 +4,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import ph from "../assets/placeholder.png";
 import { AuthDataContext } from "../../context/AuthContext";
 import axios from "axios";
+import toast from "react-hot-toast";
 const Signup = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
@@ -14,6 +15,10 @@ const Signup = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
+    if (!name || !email || !password) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
     try {
       const response = await axios.post(
         serverUrl + "/api/auth/signup",
@@ -29,10 +34,9 @@ const Signup = () => {
 
       setUserData(response.data.user);
       navigate("/");
+      toast.success("Signup successful!");
     } catch (error) {
-      console.log(
-        `error in axios response (Signup.jsx) message: ${error.message}`
-      );
+      toast.error(error.response.data.message);
     }
   };
   return (

@@ -73,8 +73,6 @@ export const EditModalProvider = ({ children }) => {
     }
   };
 
-  console.log("Rendering EditModalProvider, isOpen:", isOpen); // Debug render
-
   return (
     <EditModalContext.Provider
       value={{

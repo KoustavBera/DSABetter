@@ -154,6 +154,7 @@ const CreateQuestion = () => {
       navigate("/dashboard");
     } catch (error) {
       setMessage({ type: "error", text: "Failed to save question." });
+      toast.error(error.response.data.message);
     } finally {
       setLoading(false);
     }

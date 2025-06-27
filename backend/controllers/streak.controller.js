@@ -24,8 +24,6 @@ export const updateStreak = async (req, res) => {
         user.streak += 1;
       } else if (difference > 1) {
         user.streak = 1;
-      } else {
-        user.streak = 1;
       }
 
       user.lastActiveDate = today;

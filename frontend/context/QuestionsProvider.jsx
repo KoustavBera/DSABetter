@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { AuthDataContext } from "./AuthContext";
+import toast from "react-hot-toast";
 
 const QuestionsContext = createContext();
 
@@ -45,6 +46,15 @@ export const QuestionsProvider = ({ children }) => {
       }
     } catch (err) {
       console.log("streak error");
+    }
+  };
+  const handleStreak = async () => {
+    try {
+      await axios.get(`${serverUrl}/api/questions/streak`, {
+        withCredentials: true,
+      });
+    } catch (error) {
+      toast.error("cannot handle streak");
     }
   };
   const deleteQuestion = async (questionId) => {
@@ -101,6 +111,7 @@ export const QuestionsProvider = ({ children }) => {
     fetchQuestions,
     fetchStreak,
     handleRevisionHeat,
+    handleStreak,
   };
 
   return (

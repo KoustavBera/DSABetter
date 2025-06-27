@@ -13,6 +13,7 @@
     "axios": "^1.10.0",
     "chart.js": "^4.5.0",
     "framer-motion": "^12.19.1",
+    "gsap": "^3.13.0",
     "lucide-react": "^0.522.0",
     "react": "^19.1.0",
     "react-calendar": "^6.0.0",

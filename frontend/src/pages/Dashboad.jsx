@@ -14,8 +14,6 @@ import {
 } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import CalendarComp from "../components/CalendarComp";
-import CalendarComp2 from "../components/CalendarComp2";
-import { IoIosArrowDown } from "react-icons/io";
 import { useState } from "react";
 import { useEditModal } from "../../context/EditModalProvider.jsx";
 import { useContext } from "react";
@@ -31,18 +29,63 @@ const Dashboard = () => {
   const [buttonClicked, setbuttonClicked] = useState(false);
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [viewMode, setViewMode] = useState("table"); // 'table' or 'cards'
-  const { serverUrl, userData } = useContext(AuthDataContext);
+  const { userData, setUserData, serverUrl } = useContext(AuthDataContext);
+  const [clicked, setClicked] = useState(false);
   const [todayQuestionSolved, settodayQuestionSolved] = useState([]);
-  const navigate = useNavigate();
+
   const {
     questions,
     loading,
     error,
     deleteQuestion,
     streak,
+    handleStreak,
+    fetchQuestions,
+    fetchStreak,
     handleRevisionHeat,
   } = useQuestions();
+  const isLoggedIn = userData && userData.name;
 
+  const navigate = useNavigate();
+  const getRandomColor = () => {
+    const colors = [
+      "#FF6B6B",
+      "#4ECDC4",
+      "#45B7D1",
+      "#96CEB4",
+      "#FECA57",
+      "#FF9FF3",
+      "#54A0FF",
+      "#5F27CD",
+      "#00D2D3",
+      "#FF9F43",
+      "#C44569",
+      "#F8B500",
+      "#6C5CE7",
+      "#A29BFE",
+      "#FD79A8",
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
+  // Check if user is logged in
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        serverUrl + "/api/auth/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      setUserData(null);
+      localStorage.removeItem("reminders");
+      navigate("/login");
+    } catch (error) {
+      console.log("Logout error ", error.message);
+    }
+  };
   useEffect(() => {
     const getTodaySolved = async () => {
       try {
@@ -52,12 +95,32 @@ const Dashboard = () => {
             withCredentials: true,
           }
         );
-        settodayQuestionSolved(res.data[1].count);
-      } catch (error) {}
+        console.log("API Response:", res.data[0].count);
+
+        // Safe access with fallback
+        if (
+          res.data &&
+          res.data.length > 0 &&
+          res.data[0].count !== undefined
+        ) {
+          let today = res.data[0].count;
+          settodayQuestionSolved(today);
+        } else {
+          settodayQuestionSolved(0);
+        }
+      } catch (error) {
+        console.error("Error fetching today's solved questions:", error);
+        settodayQuestionSolved(0);
+      }
     };
     getTodaySolved();
   }, []);
   console.log(todayQuestionSolved);
+
+  useEffect(() => {
+    fetchQuestions();
+    fetchStreak();
+  }, []);
 
   // Add loading state if userData is not available
   if (!userData) {
@@ -141,10 +204,45 @@ const Dashboard = () => {
         className="w-1/4 bg-white   h-full flex flex-col items-start justify-start fixed left-0 top-0 z-10"
         id="Sidebar"
       >
-        <div className="mb-4 mx-9 mt-4">
-          <button onClick={() => navigate("/")}>
-            <h1 className="text-[19px]">DSA Revision</h1>
-          </button>
+        <div className="mb-4 mx-9 mt-4 ">
+          <div className="flex items-center justify-between w-full gap-14">
+            <div>
+              <button onClick={() => navigate("/")}>
+                <h1 className="md:text-[19px] text-sm  ">DSA Revision</h1>
+              </button>
+            </div>
+
+            <div>
+              <div className="relative">
+                <button
+                  className="border-[1px] border-gray-300 p-[5px] rounded-full hover:bg-gray-300 shadow-inner"
+                  onClick={() => setClicked(!clicked)}
+                >
+                  {isLoggedIn ? (
+                    <div
+                      className="w-[30px] h-[30px] rounded-full flex items-center justify-center text-white font-bold text-lg"
+                      style={{ backgroundColor: getRandomColor() }}
+                    >
+                      {userData.name.charAt(0).toUpperCase()}
+                    </div>
+                  ) : (
+                    <CgProfile className="text-[30px]" />
+                  )}
+                </button>
+                {userData && clicked && (
+                  <div className="h-[3em] w-[7em] bg-[white] rounded-lg border-[1px] border-gray-300 absolute top-11 flex items-center justify-center left-0 ">
+                    <button
+                      onClick={handleLogout}
+                      className="hover:bg-slate-200 w-full h-full"
+                    >
+                      logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
           <div className="flex gap-10 items-center ">
             <p className="text-[#7a7a7a]">v1.0</p>
             <p className="bg-green-100 text-green-600 border-[1px] border-green-600 text-[10px] px-[5px] font-bold py-[1px] rounded-full animate-bounce">
@@ -247,14 +345,11 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          <div id="calendar">
-            <h1 className="text-[24px] font-semibold mb-8">
-              Revision Calendar
-            </h1>
-            <div className="flex gap-4">
-              <CalendarComp />
-              <DifficultyChart />
-            </div>
+        </section>
+        <section id="Calendar">
+          <h1 className="text-[24px] font-semibold mb-8">Revision Calendar</h1>
+          <div className="flex gap-4">
+            <CalendarComp />
           </div>
         </section>
 
@@ -353,7 +448,10 @@ const Dashboard = () => {
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-800 hover:underline font-semibold text-lg mb-2 block"
                                 title={question.title}
-                                onClick={() => handleRevisionHeat(question._id)}
+                                onClick={() => {
+                                  handleRevisionHeat(question._id);
+                                  handleStreak();
+                                }}
                               >
                                 {question.title}
                               </a>
@@ -452,19 +550,19 @@ const Dashboard = () => {
                           </div>
                         </div>
                       ))}
+                      {questions.length > 5 && (
+                        <div className="mt-4 p-4 text-center w-[100%] text-gray-500 bg-gray-50 rounded-lg border">
+                          Showing 5 of {questions.length} questions.
+                          <button
+                            onClick={() => navigate("/view")}
+                            className="text-blue-600 hover:text-blue-800 ml-1"
+                          >
+                            View all →
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
-                {questions.length > 5 && (
-                  <div className="mt-4 p-4 text-center text-gray-500 bg-gray-50 rounded-lg border">
-                    Showing 5 of {questions.length} questions.
-                    <button
-                      onClick={() => navigate("/view")}
-                      className="text-blue-600 hover:text-blue-800 ml-1"
-                    >
-                      View all →
-                    </button>
-                  </div>
-                )}
 
                 {/* Enhanced Table View */}
                 {!loading &&
@@ -516,9 +614,10 @@ const Dashboard = () => {
                                     rel="noopener noreferrer"
                                     className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
                                     title={question.title}
-                                    onClick={() =>
-                                      handleRevisionHeat(question._id)
-                                    }
+                                    onMouseDown={() => {
+                                      handleRevisionHeat(question._id);
+                                      handleStreak();
+                                    }}
                                   >
                                     {question.title}
                                   </a>

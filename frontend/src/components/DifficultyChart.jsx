@@ -40,8 +40,8 @@ const DifficultyChart = () => {
   }, [serverUrl]);
 
   return (
-    <div className="w-full h-[300px] bg-white shadow-md rounded-xl p-4">
-      <h1 className="font-thin">Difficulty Of Questions</h1>
+    <div className="w-2/3 h-[30rem] rounded-lg p-6  border-[1px] border-slate-300">
+      <h1 className="font-semibold text-center">Difficulty Of Questions</h1>
       <ResponsiveContainer width="9	0%" height="100%">
         <BarChart
           data={data}
@@ -54,8 +54,14 @@ const DifficultyChart = () => {
           <Bar dataKey="count" fill="url(#barGradient)" radius={[8, 8, 0, 0]} />
           <defs>
             <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#00fc11" stopOpacity={0.9} />
-              <stop offset="100%" stopColor="#818cf8" stopOpacity={0.6} />
+              <stop
+                offset="0%"
+                stopColor="
+#00000
+"
+                stopOpacity={0.9}
+              />
+              <stop offset="100%" stopColor="#ffff" stopOpacity={0.6} />
             </linearGradient>
           </defs>
         </BarChart>
