@@ -4,6 +4,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import ph from "../assets/placeholder.png";
 import { AuthDataContext } from "../../context/AuthContext";
 import axios from "axios";
+import img2 from "/img2.svg";
 import toast from "react-hot-toast";
 const Signup = () => {
   const navigate = useNavigate();
@@ -108,7 +109,7 @@ const Signup = () => {
 
       <div
         className="basis-1/3 "
-        style={{ backgroundImage: `url(${ph})`, backgroundSize: "cover" }}
+        style={{ backgroundImage: `url(${img2})`, backgroundSize: "cover" }}
       ></div>
     </div>
   );

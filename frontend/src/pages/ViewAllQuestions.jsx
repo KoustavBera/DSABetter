@@ -157,7 +157,7 @@ const ViewAllQuestions = () => {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
               <Link
-                to="/dashboard"
+                to="/"
                 className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-full transition-colors"
               >
                 <IoIosArrowBack size={24} />
