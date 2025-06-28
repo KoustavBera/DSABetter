@@ -37,7 +37,7 @@ const Signup = () => {
       );
 
       setUserData(response.data.user);
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       console.log(`error in axios response (Signup.jsx): ${error.message}`);
     }

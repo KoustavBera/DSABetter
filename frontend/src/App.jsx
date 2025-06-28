@@ -43,11 +43,10 @@ const App = () => {
       <Toaster position="top-center" reverseOrder={false} />
       <EditModalProvider>
         <Routes>
-          {!userData ? (
-            <Route path="/" element={<Home />} />
-          ) : (
-            <Route path="/" element={<Dashboad />} />
-          )}
+          <Route path="/" element={<Home />} />
+
+          <Route path="/dashboard" element={<Dashboad />} />
+
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/create" element={<CreateQuestion />} />

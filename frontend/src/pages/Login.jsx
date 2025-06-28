@@ -35,7 +35,7 @@ const Login = () => {
       );
 
       await getUserData(); // update context
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       console.log(
         `error in axios response (Login.jsx) message: ${error.message}`

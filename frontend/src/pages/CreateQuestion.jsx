@@ -151,7 +151,7 @@ const CreateQuestion = () => {
       await fetchStreak();
 
       // Now navigate
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       setMessage({ type: "error", text: "Failed to save question." });
       toast.error(error.response.data.message);
@@ -164,7 +164,7 @@ const CreateQuestion = () => {
     <div className="relative">
       <button
         className="h-[3rem] w-[3rem] flex items-center justify-center bg-blue-500 text-[white] rounded-full absolute top-5 left-5 "
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/dashboard")}
       >
         <FaCircleChevronLeft className="text-[2.9rem]" />
       </button>
