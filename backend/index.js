@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 8000;
 const app = express();
 app.use(
   cors({
-    origin: "https://dsa-better.vercel.app/",
+    origin: ["https://dsa-better.vercel.app", "http://localhost:5173"],
     credentials: true,
   })
 );
