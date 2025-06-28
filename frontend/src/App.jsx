@@ -11,10 +11,10 @@ import UpdateQuestion from "./pages/UpdateQuestion.jsx";
 import SettingComp from "./pages/SettingComp.jsx";
 import About from "./pages/About.jsx";
 import Footer from "./components/Footer.jsx";
-import MyLoader from "./components/SkeletonLoaderComponent.jsx";
+import SkeletonLoaderComponent from "./components/SkeletonLoaderComponent.jsx";
 import { EditModalProvider } from "../context/EditModalProvider.jsx";
 import { AuthDataContext } from "../context/AuthContext.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx"; // ✅ Importing ProtectedRoute
+import ProtectedRoute from "./components/ProtectedRoutes.jsx";
 
 // 👇 mobile detection function
 const isMobileDevice = () =>
@@ -37,7 +37,7 @@ const App = () => {
   }
 
   if (loading) {
-    return <MyLoader />;
+    return <SkeletonLoaderComponent />;
   }
 
   return (
