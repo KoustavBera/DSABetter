@@ -13,33 +13,36 @@ const Signup = () => {
   const [password, setPassword] = useState("");
 
   const { serverUrl, userData, setUserData } = useContext(AuthDataContext);
-
   const handleSignup = async (e) => {
     e.preventDefault();
+
     if (!name || !email || !password) {
       toast.error("Please fill in all fields.");
       return;
     }
+
     try {
-      const response = await axios.post(
-        serverUrl + "/api/auth/signup",
+      const response = await toast.promise(
+        axios.post(
+          serverUrl + "/api/auth/signup",
+          { name, email, password },
+          { withCredentials: true }
+        ),
         {
-          name,
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
+          loading: "Signing up...",
+          success: "Signup successful!",
+          error: (err) =>
+            err?.response?.data?.message || "Something went wrong.",
         }
       );
 
       setUserData(response.data.user);
       navigate("/");
-      toast.success("Signup successful!");
     } catch (error) {
-      toast.error(error.response.data.message);
+      console.log(`error in axios response (Signup.jsx): ${error.message}`);
     }
   };
+
   return (
     <div className="w-[100vw] h-[100vh] flex">
       <div className="w-[43px] h-[40px] ml-3 mt-3 overflow-auto bg-[black] text-white rounded-[50%] flex items-center justify-center text-[25px]">

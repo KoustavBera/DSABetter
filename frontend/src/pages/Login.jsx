@@ -11,35 +11,38 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { serverUrl, setUserData, getUserData } = useContext(AuthDataContext);
-
   const handleLogin = async (e) => {
     e.preventDefault();
+
     if (!email || !password) {
       toast.error("Please fill in all fields.");
       return;
     }
+
     try {
-      const response = await axios.post(
-        serverUrl + "/api/auth/login",
+      await toast.promise(
+        axios.post(
+          serverUrl + "/api/auth/login",
+          { email, password },
+          { withCredentials: true }
+        ),
         {
-          email,
-          password,
-        },
-        {
-          withCredentials: true,
+          loading: "Logging in...",
+          success: "Login successful!",
+          error: (err) =>
+            err?.response?.data?.message || "Something went wrong.",
         }
       );
 
-      await getUserData();
-      toast.success("Login succesful!");
+      await getUserData(); // update context
       navigate("/");
     } catch (error) {
       console.log(
-        `error in axios response (Signup.jsx) message: ${error.message}`
+        `error in axios response (Login.jsx) message: ${error.message}`
       );
-      toast.error(error.response.data.message);
     }
   };
+
   return (
     <div className="w-[100vw] h-[100vh] flex">
       <div className="w-[43px] h-[40px] ml-3 mt-3 overflow-auto bg-[black] text-white rounded-[50%] flex items-center justify-center text-[25px]">
