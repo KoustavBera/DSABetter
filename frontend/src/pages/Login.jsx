@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import ph from "../assets/placeholder.png";
@@ -6,11 +6,16 @@ import { AuthDataContext } from "../../context/AuthContext";
 import { toast } from "react-hot-toast";
 import img1 from "/img1.svg";
 import axios from "axios";
+
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { serverUrl, setUserData, getUserData } = useContext(AuthDataContext);
+  const { serverUrl, setUserData, getUserData, userData } =
+    useContext(AuthDataContext);
+
+  const [loginAttempted, setLoginAttempted] = useState(false); // to avoid redirect before login
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -34,14 +39,21 @@ const Login = () => {
         }
       );
 
-      await getUserData(); // update context
-      navigate("/dashboard");
+      await getUserData(); // sets userData in context
+      setLoginAttempted(true); // flag to allow redirect after userData is loaded
     } catch (error) {
       console.log(
         `error in axios response (Login.jsx) message: ${error.message}`
       );
     }
   };
+
+  // ✅ Redirect after userData is loaded
+  useEffect(() => {
+    if (loginAttempted && userData) {
+      navigate("/dashboard");
+    }
+  }, [userData, loginAttempted, navigate]);
 
   return (
     <div className="w-[100vw] h-[100vh] flex">
