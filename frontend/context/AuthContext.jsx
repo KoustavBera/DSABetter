@@ -5,7 +5,7 @@ export const AuthDataContext = createContext();
 const AuthContext = ({ children }) => {
   let [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const serverUrl = "http://localhost:8000";
+  const serverUrl = "https://dsabetter-backend.onrender.com";
 
   const getUserData = async () => {
     try {
