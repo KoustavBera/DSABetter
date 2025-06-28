@@ -23,6 +23,7 @@ import ViewButton from "../components/ViewButton";
 import DifficultyChart from "../components/DifficultyChart";
 import Analytics from "../components/Analytics";
 import axios from "axios";
+import Banner from "../components/Banner.jsx";
 
 const Dashboard = () => {
   const { openModal } = useEditModal();
@@ -32,7 +33,7 @@ const Dashboard = () => {
   const { userData, setUserData, serverUrl } = useContext(AuthDataContext);
   const [clicked, setClicked] = useState(false);
   const [todayQuestionSolved, settodayQuestionSolved] = useState([]);
-
+  const { bannerclicked, setbannerclicked } = useQuestions();
   const {
     questions,
     loading,
@@ -198,10 +199,15 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="w-screen h-screen flex relative">
+    <div className="w-screen h-screen  relative">
+      <div className="z-[9999]">
+        <Banner />
+      </div>
       {/* Fixed Sidebar */}
       <div
-        className="w-1/4 bg-white   h-full flex flex-col items-start justify-start fixed left-0 top-0 z-10"
+        className={`w-1/4 bg-white ${
+          !bannerclicked && `mt-[50px]`
+        }  h-full flex flex-col items-start justify-start fixed left-0 top-0 z-10`}
         id="Sidebar"
       >
         <div className="mb-4 mx-9 mt-4 ">
@@ -303,7 +309,7 @@ const Dashboard = () => {
 
       {/* Main Content with left margin to account for fixed sidebar */}
       <div
-        className="w-3/4 bg-white min-h-screen py-8 flex flex-col gap-40 ml-[25%] overflow-y-auto"
+        className="w-3/4 bg-white min-h-screen py-8 flex flex-col gap-40 ml-[25%] overflow-y-auto mt-[50px]"
         id="Main-Content"
         style={{ scrollBehavior: "smooth" }}
       >

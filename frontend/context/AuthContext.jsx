@@ -4,6 +4,7 @@ import React, { createContext, useEffect, useState } from "react";
 export const AuthDataContext = createContext();
 const AuthContext = ({ children }) => {
   let [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const serverUrl = "http://localhost:8000";
 
   const getUserData = async () => {
@@ -21,6 +22,8 @@ const AuthContext = ({ children }) => {
         console.log("Error fetching user data:", error.message);
         setUserData(null);
       }
+    } finally {
+      setLoading(false);
     }
   };
   const value = {
@@ -28,6 +31,7 @@ const AuthContext = ({ children }) => {
     userData,
     setUserData,
     getUserData,
+    loading,
   };
 
   useEffect(() => {

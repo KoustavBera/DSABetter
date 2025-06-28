@@ -19,6 +19,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Nav from "../components/Nav";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
+import Banner from "../components/Banner";
 
 const Home = () => {
   const heroRef = useRef(null);
@@ -194,6 +195,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900">
+      <Banner />
       <Nav />
       {/* Hero Section */}
       <section ref={heroRef} className="relative px-6 py-20 lg:py-32">

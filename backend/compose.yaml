@@ -1,0 +1,13 @@
+
+
+services:
+  
+  backend:
+    build:
+      context: contextPath
+      dockerfile: Dockerfile
+      port:
+      -"8000:8000"
+
+   db:
+       

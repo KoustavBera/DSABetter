@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import AuthContext from "../context/AuthContext.jsx";
 import { QuestionsProvider } from "../context/QuestionsProvider.jsx";
+import Banner from "./components/Banner.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>

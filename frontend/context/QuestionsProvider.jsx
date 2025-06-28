@@ -19,6 +19,8 @@ export const QuestionsProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [streak, setStreak] = useState(0);
+  const [bannerclicked, setbannerclicked] = useState(false);
+
   const { serverUrl } = useContext(AuthDataContext);
   const fetchQuestions = async () => {
     setLoading(true);
@@ -112,6 +114,8 @@ export const QuestionsProvider = ({ children }) => {
     fetchStreak,
     handleRevisionHeat,
     handleStreak,
+    bannerclicked,
+    setbannerclicked,
   };
 
   return (
