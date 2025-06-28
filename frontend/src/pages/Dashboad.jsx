@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { MdHomeFilled } from "react-icons/md";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { IoCalendarNumberOutline } from "react-icons/io5";
 import { ImStatsDots } from "react-icons/im";
 import { IoSettingsOutline } from "react-icons/io5";
+import { useQuestions } from "../../context/QuestionsProvider";
 import {
   MdKeyboardArrowRight,
   MdEdit,
@@ -11,44 +12,125 @@ import {
   MdExpandMore,
   MdExpandLess,
 } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CalendarComp from "../components/CalendarComp";
-import CalendarComp2 from "../components/CalendarComp2";
-import { IoIosArrowDown } from "react-icons/io";
 import { useState } from "react";
-import { useEffect } from "react";
-import axios from "axios";
+import { useEditModal } from "../../context/EditModalProvider.jsx";
 import { useContext } from "react";
 import { AuthDataContext } from "../../context/AuthContext";
 import CreateButton from "../components/CreateButton";
+import ViewButton from "../components/ViewButton";
+import DifficultyChart from "../components/DifficultyChart";
+import Analytics from "../components/Analytics";
+import axios from "axios";
+import Banner from "../components/Banner.jsx";
 
 const Dashboard = () => {
+  const { openModal } = useEditModal();
   const [buttonClicked, setbuttonClicked] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [questions, setQuestions] = useState([]);
-  const [error, setError] = useState(null);
   const [expandedRows, setExpandedRows] = useState(new Set());
   const [viewMode, setViewMode] = useState("table"); // 'table' or 'cards'
-  const { serverUrl } = useContext(AuthDataContext);
+  const { userData, setUserData, serverUrl } = useContext(AuthDataContext);
+  const [clicked, setClicked] = useState(false);
+  const [todayQuestionSolved, settodayQuestionSolved] = useState([]);
+  const { bannerclicked, setbannerclicked } = useQuestions();
+  const {
+    questions,
+    loading,
+    error,
+    deleteQuestion,
+    streak,
+    handleStreak,
+    fetchQuestions,
+    fetchStreak,
+    handleRevisionHeat,
+  } = useQuestions();
+  const isLoggedIn = userData && userData.name;
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get(serverUrl + "/api/questions", {
+  const navigate = useNavigate();
+  const getRandomColor = () => {
+    const colors = [
+      "#FF6B6B",
+      "#4ECDC4",
+      "#45B7D1",
+      "#96CEB4",
+      "#FECA57",
+      "#FF9FF3",
+      "#54A0FF",
+      "#5F27CD",
+      "#00D2D3",
+      "#FF9F43",
+      "#C44569",
+      "#F8B500",
+      "#6C5CE7",
+      "#A29BFE",
+      "#FD79A8",
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
+  // Check if user is logged in
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        serverUrl + "/api/auth/logout",
+        {},
+        {
           withCredentials: true,
-        });
-        console.log(res);
-        setQuestions(res.data);
+        }
+      );
+      setUserData(null);
+      localStorage.removeItem("reminders");
+      navigate("/login");
+    } catch (error) {
+      console.log("Logout error ", error.message);
+    }
+  };
+  useEffect(() => {
+    const getTodaySolved = async () => {
+      try {
+        const res = await axios.get(
+          serverUrl + "/api/questions/stats/revisionHistory",
+          {
+            withCredentials: true,
+          }
+        );
+        console.log("API Response:", res.data[0].count);
+
+        // Safe access with fallback
+        if (
+          res.data &&
+          res.data.length > 0 &&
+          res.data[0].count !== undefined
+        ) {
+          let today = res.data[0].count;
+          settodayQuestionSolved(today);
+        } else {
+          settodayQuestionSolved(0);
+        }
       } catch (error) {
-        setError(error.message);
-        console.error("Error fetching questions", error);
-      } finally {
-        setLoading(false);
+        console.error("Error fetching today's solved questions:", error);
+        settodayQuestionSolved(0);
       }
     };
-    fetchQuestions();
+    getTodaySolved();
   }, []);
+  console.log(todayQuestionSolved);
+
+  useEffect(() => {
+    fetchQuestions();
+    fetchStreak();
+  }, []);
+
+  // Add loading state if userData is not available
+  if (!userData) {
+    return (
+      <div className="w-screen h-screen flex items-center justify-center">
+        <div className="text-gray-500">Loading...</div>
+      </div>
+    );
+  }
 
   // Toggle row expansion
   const toggleRowExpansion = (questionId) => {
@@ -59,25 +141,6 @@ const Dashboard = () => {
       newExpanded.add(questionId);
     }
     setExpandedRows(newExpanded);
-  };
-
-  // Delete question function
-  const handleDeleteQuestion = async (questionId) => {
-    if (!window.confirm("Are you sure you want to delete this question?")) {
-      return;
-    }
-
-    try {
-      await axios.delete(`${serverUrl}/api/questions/${questionId}`, {
-        withCredentials: true,
-      });
-
-      // Remove question from local state
-      setQuestions(questions.filter((q) => q._id !== questionId));
-    } catch (err) {
-      console.error("Error deleting question:", err);
-      alert("Failed to delete question");
-    }
   };
 
   // Get difficulty color
@@ -123,38 +186,122 @@ const Dashboard = () => {
     return topics;
   };
 
+  const handleDeleteQuestion = async (questionId) => {
+    if (!window.confirm("Are you sure you want to delete this question?")) {
+      return;
+    }
+
+    try {
+      await deleteQuestion(questionId);
+    } catch (err) {
+      alert("Failed to delete question");
+    }
+  };
+
   return (
-    <div className="w-screen h-screen flex relative">
+    <div className="w-screen h-screen  relative">
+      <div className="z-[9999]">
+        <Banner />
+      </div>
       {/* Fixed Sidebar */}
       <div
-        className="w-1/4 bg-white h-full flex flex-col items-start justify-start fixed left-0 top-0 z-10"
+        className={`w-1/4 bg-white ${
+          !bannerclicked && `mt-[50px]`
+        }  h-full flex flex-col items-start justify-start fixed left-0 top-0 z-10`}
         id="Sidebar"
       >
-        <div className="mb-4 mx-9 mt-4">
-          <h1 className="text-[19px]">DSA Revision</h1>
-          <p className="text-[#7a7a7a]">v1.0</p>
+        <div className="mb-4 mx-9 mt-4 ">
+          <div className="flex items-center justify-between w-full gap-14">
+            <div>
+              <button onClick={() => navigate("/")}>
+                <h1 className="md:text-[19px] text-sm  ">DSA Revision</h1>
+              </button>
+            </div>
+
+            <div>
+              <div className="relative">
+                <button
+                  className="border-[1px] border-gray-300 p-[5px] rounded-full hover:bg-gray-300 shadow-inner"
+                  onClick={() => setClicked(!clicked)}
+                >
+                  {isLoggedIn ? (
+                    <div
+                      className="w-[30px] h-[30px] rounded-full flex items-center justify-center text-white font-bold text-lg"
+                      style={{ backgroundColor: getRandomColor() }}
+                    >
+                      {userData.name.charAt(0).toUpperCase()}
+                    </div>
+                  ) : (
+                    <CgProfile className="text-[30px]" />
+                  )}
+                </button>
+                {userData && clicked && (
+                  <div className="h-[3em] w-[7em] bg-[white] rounded-lg border-[1px] border-gray-300 absolute top-11 flex items-center justify-center left-0 ">
+                    <button
+                      onClick={handleLogout}
+                      className="hover:bg-slate-200 w-full h-full"
+                    >
+                      logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-10 items-center ">
+            <p className="text-[#7a7a7a]">v1.0</p>
+            <p className="bg-green-100 text-green-600 border-[1px] border-green-600 text-[10px] px-[5px] font-bold py-[1px] rounded-full animate-bounce">
+              Beta
+            </p>
+          </div>
         </div>
         <div className="w-full">
           <ul className="px-3 w-full flex-col justify-center items-center flex gap-5">
-            <li className="w-[80%] flex items-center select-none gap-4 px-4 py-2 hover:bg-[#dbdbdbe1] ml-8 rounded-full">
-              <MdHomeFilled className="text-[24px]" />
-              <div>Dashboard</div>
+            <li className="w-[80%] flex items-center  px-4 py-2 hover:bg-[#dbdbdbe1] ml-8 rounded-full">
+              <a
+                href="#Dashboard"
+                className=" flex items-center select-none gap-4 "
+              >
+                <MdHomeFilled className="text-[24px]" />
+                <div>Dashboard</div>
+              </a>
             </li>
             <li className="w-[80%] flex items-center select-none gap-4 px-4 py-2 hover:bg-[#dbdbdbe1] ml-8 rounded-full">
-              <FaRegQuestionCircle className="text-[24px]" />
-              <div>Questions</div>
+              <a
+                href="#Manage-Questions"
+                className=" flex items-center select-none gap-4 "
+              >
+                <FaRegQuestionCircle className="text-[24px]" />
+                <div>Questions</div>
+              </a>
             </li>
             <li className="w-[80%] flex items-center select-none gap-4 px-4 py-2 hover:bg-[#dbdbdbe1] ml-8 rounded-full">
-              <IoCalendarNumberOutline className="text-[24px]" />
-              <div>Calendar</div>
+              <a
+                href="#Calendar"
+                className=" flex items-center select-none gap-4 "
+              >
+                <IoCalendarNumberOutline className="text-[24px]" />
+                <div>Calendar</div>
+              </a>
             </li>
             <li className="w-[80%] flex items-center select-none gap-4 px-4 py-2 hover:bg-[#dbdbdbe1] ml-8 rounded-full">
-              <ImStatsDots className="text-[24px]" />
-              <div>Analytics</div>
+              <a
+                href="#Analytics"
+                className=" flex items-center select-none gap-4 "
+              >
+                <ImStatsDots className="text-[24px]" />
+                <div>Analytics</div>
+              </a>
             </li>
-            <li className="w-[80%] flex items-center select-none gap-4 px-4 py-2 hover:bg-[#dbdbdbe1] ml-8 rounded-full">
-              <IoSettingsOutline className="text-[24px]" />
-              <div>Settings</div>
+            <li className="w-[80%] px-4 py-2 hover:bg-[#dbdbdbe1] ml-8 rounded-full">
+              <button
+                className="flex items-center select-none gap-4 "
+                onClick={() => navigate("/settings")}
+              >
+                <IoSettingsOutline className="text-[24px]" />
+                <div>Settings</div>
+              </button>
             </li>
           </ul>
         </div>
@@ -162,28 +309,25 @@ const Dashboard = () => {
 
       {/* Main Content with left margin to account for fixed sidebar */}
       <div
-        className="w-3/4 bg-white min-h-screen py-8 flex flex-col gap-40 ml-[25%] overflow-y-auto"
+        className="w-3/4 bg-white min-h-screen py-8 flex flex-col gap-40 ml-[25%] overflow-y-auto mt-[50px]"
         id="Main-Content"
+        style={{ scrollBehavior: "smooth" }}
       >
         {/* Dashboard Section */}
-        <div id="Dashboard" className="w-full flex flex-col gap-8">
+        <section id="Dashboard" className="w-full flex flex-col gap-8">
           <div id="header">
             <h1 className="text-[32px] font-semibold">Dashboard</h1>
             <p className="text-[gray] text-[16px]">
-              Welcome back $data.user.name! Ready to boost DSA skills
+              Welcome back{" "}
+              <span className="text-gray-600">{userData?.name || "User"}</span>!
+              Ready to boost DSA skills
             </p>
           </div>
           <div id="quick-actions">
             <h1 className="text-[24px] font-semibold mb-5">Quick actions</h1>
             <div className="flex">
               <CreateButton />
-              <button
-                id="button2"
-                className="bg-gray-200 text-black font-medium px-4 py-2 w-auto mx-2 hover:bg-gray-300 rounded-full"
-                onClick={() => setbuttonClicked(!buttonClicked)}
-              >
-                View all questions
-              </button>
+              <ViewButton />
             </div>
           </div>
           <div id="daily-revision-stats">
@@ -195,33 +339,28 @@ const Dashboard = () => {
                 <h1 className="text-[16px] font-medium">
                   Questions Solved Today
                 </h1>
-                <p className="font-bold text-[22px]">5</p>
+                <p className="font-bold text-[22px]">{todayQuestionSolved}</p>
               </div>
               <div className="h-28 w-72 rounded-xl shadow-md border-[1px] border-slate-300 flex flex-col items-start justify-start px-10 py-8">
-                <h1 className="text-[16px] font-medium">
-                  Total Questions Solved
-                </h1>
+                <h1 className="text-[16px] font-medium">Total Questions</h1>
                 <p className="font-bold text-[22px]">{questions.length}</p>
               </div>
               <div className="h-28 w-72 rounded-xl shadow-md border-[1px] border-slate-300 flex flex-col items-start justify-start px-10 py-8">
-                <h1 className="text-[16px] font-medium">Streak</h1>
-                <p className="font-bold text-[22px]">0</p>
+                <h1 className="text-[16px] font-medium">Streak🔥</h1>
+                <p className="font-bold text-[22px]">{streak}</p>
               </div>
             </div>
           </div>
-          <div id="calendar">
-            <h1 className="text-[24px] font-semibold mb-8">
-              Revision Calendar
-            </h1>
-            <div className="flex gap-4">
-              <CalendarComp />
-              <CalendarComp2 />
-            </div>
+        </section>
+        <section id="Calendar">
+          <h1 className="text-[24px] font-semibold mb-8">Revision Calendar</h1>
+          <div className="flex gap-4">
+            <CalendarComp />
           </div>
-        </div>
+        </section>
 
         {/*--------------- ALL Questions Section --------------------*/}
-        <div id="Manage-Questions">
+        <section id="Manage-Questions">
           <h1 className="text-[32px] font-semibold">All Questions</h1>
           <div className="mt-8 space-y-4">
             <p className="text-gray-600">
@@ -235,7 +374,7 @@ const Dashboard = () => {
                   onClick={() => setViewMode("table")}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                     viewMode === "table"
-                      ? "bg-blue-600 text-white"
+                      ? "bg-slate-800 text-white"
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 >
@@ -252,8 +391,9 @@ const Dashboard = () => {
                   Card View
                 </button>
               </div>
-              <div>
+              <div className="flex gap-5">
                 <CreateButton />
+                <ViewButton />
               </div>
             </div>
 
@@ -301,7 +441,7 @@ const Dashboard = () => {
                   questions.length > 0 &&
                   viewMode === "cards" && (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {questions.map((question) => (
+                      {questions.slice(0, 4).map((question) => (
                         <div
                           key={question._id}
                           className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-6"
@@ -314,6 +454,10 @@ const Dashboard = () => {
                                 rel="noopener noreferrer"
                                 className="text-blue-600 hover:text-blue-800 hover:underline font-semibold text-lg mb-2 block"
                                 title={question.title}
+                                onClick={() => {
+                                  handleRevisionHeat(question._id);
+                                  handleStreak();
+                                }}
                               >
                                 {question.title}
                               </a>
@@ -341,6 +485,7 @@ const Dashboard = () => {
                               <button
                                 className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
                                 title="Edit Question"
+                                onClick={() => openModal(question)}
                               >
                                 <MdEdit size={16} />
                               </button>
@@ -411,6 +556,17 @@ const Dashboard = () => {
                           </div>
                         </div>
                       ))}
+                      {questions.length > 5 && (
+                        <div className="mt-4 p-4 text-center w-[100%] text-gray-500 bg-gray-50 rounded-lg border">
+                          Showing 5 of {questions.length} questions.
+                          <button
+                            onClick={() => navigate("/view")}
+                            className="text-blue-600 hover:text-blue-800 ml-1"
+                          >
+                            View all →
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -450,7 +606,7 @@ const Dashboard = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {questions.map((question, index) => (
+                          {questions.slice(0, 5).map((question, index) => (
                             <React.Fragment key={question._id}>
                               <tr
                                 className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
@@ -464,6 +620,10 @@ const Dashboard = () => {
                                     rel="noopener noreferrer"
                                     className="text-blue-600 hover:text-blue-800 hover:underline font-medium"
                                     title={question.title}
+                                    onMouseDown={() => {
+                                      handleRevisionHeat(question._id);
+                                      handleStreak();
+                                    }}
                                   >
                                     {question.title}
                                   </a>
@@ -568,6 +728,7 @@ const Dashboard = () => {
                                     <button
                                       className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
                                       title="Edit Question"
+                                      onClick={() => openModal(question)}
                                     >
                                       <MdEdit size={16} />
                                     </button>
@@ -616,6 +777,24 @@ const Dashboard = () => {
                             </React.Fragment>
                           ))}
                         </tbody>
+                        {questions.length > 5 && (
+                          <tfoot>
+                            <tr>
+                              <td
+                                colSpan="8"
+                                className="py-3 px-4 text-center text-gray-500 bg-gray-50"
+                              >
+                                Showing 5 of {questions.length} questions.
+                                <button
+                                  onClick={() => navigate("/view")}
+                                  className="text-blue-600 hover:text-blue-800 ml-1"
+                                >
+                                  View all →
+                                </button>
+                              </td>
+                            </tr>
+                          </tfoot>
+                        )}
                       </table>
                     </div>
                   )}
@@ -640,7 +819,11 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </div>
+        </section>
+
+        <section id="Analytics">
+          <Analytics />
+        </section>
       </div>
     </div>
   );

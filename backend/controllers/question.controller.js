@@ -1,20 +1,12 @@
-import mongoose from "mongoose";
 import Question from "../models/questionModel.js";
-
+import mongoose from "mongoose";
 // ✅ Get all questions for authenticated user
 export const getAllQuestion = async (req, res) => {
   try {
     const questions = await Question.find({ user: req.userId }).sort({
       createdAt: -1,
     });
-
-    if (questions.length === 0) {
-      return res
-        .status(200)
-        .json({ message: "No questions found yet", data: [] });
-    }
-
-    res.status(200).json(questions);
+    res.status(200).json(questions); // Always return an array
   } catch (error) {
     console.error("getAllQuestion error:", error.message);
     res
@@ -107,5 +99,76 @@ export const updateQuestion = async (req, res) => {
   } catch (error) {
     console.error("Update error:", error.message);
     res.status(500).json({ message: "Server Error" });
+  }
+};
+
+export const getDifficultyStats = async (req, res) => {
+  try {
+    const stats = await Question.aggregate([
+      {
+        $match: { user: new mongoose.Types.ObjectId(req.userId) },
+      },
+      {
+        $group: {
+          _id: "$difficulty",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    res.status(200).json(stats);
+  } catch (error) {
+    console.error("Difficulty stats error:", error.message);
+    res.status(500).json({ message: "Error fetching difficulty stats" });
+  }
+};
+
+export const getSiteStats = async (req, res) => {
+  try {
+    const stats = await Question.aggregate([
+      {
+        $match: { user: new mongoose.Types.ObjectId(req.userId) },
+      },
+      {
+        $group: {
+          _id: "$site",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    res.status(200).json(stats);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching site stats" });
+  }
+};
+
+export const updateRevision = async (req, res) => {
+  try {
+    const question = await Question.findById(req.params.id);
+
+    if (!question)
+      return res.status(404).json({
+        message: "Question not found",
+      });
+
+    const today = new Date().toDateString();
+    const lastRevisionDate = question.lastRevisionDate?.toDateString();
+
+    //Only  increase if not today
+    if (today !== lastRevisionDate) {
+      question.revision = question.revision + 1;
+      question.lastRevisionDate = new Date();
+
+      question.revisionHistory.push({
+        date: new Date(),
+        status: question.status,
+      });
+      await question.save();
+    }
+
+    res.status(200).json({ revision: question.revision });
+  } catch (error) {
+    console.log("Revision update error", error.message);
+    return res.status(500).json({ message: "Server Error" });
   }
 };

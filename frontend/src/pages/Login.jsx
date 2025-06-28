@@ -3,15 +3,21 @@ import { useNavigate } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 import ph from "../assets/placeholder.png";
 import { AuthDataContext } from "../../context/AuthContext";
+import { toast } from "react-hot-toast";
+import img1 from "/img1.svg";
 import axios from "axios";
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { serverUrl, setUserData } = useContext(AuthDataContext);
+  const { serverUrl, setUserData, getUserData } = useContext(AuthDataContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!email || !password) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
     try {
       const response = await axios.post(
         serverUrl + "/api/auth/login",
@@ -24,13 +30,14 @@ const Login = () => {
         }
       );
 
-      setUserData(response.data.user);
+      await getUserData();
+      toast.success("Login succesful!");
       navigate("/");
     } catch (error) {
       console.log(
         `error in axios response (Signup.jsx) message: ${error.message}`
       );
-      alert(error.message);
+      toast.error(error.response.data.message);
     }
   };
   return (
@@ -89,7 +96,10 @@ const Login = () => {
 
       <div
         className="basis-1/3 "
-        style={{ backgroundImage: `url(${ph})`, backgroundSize: "cover" }}
+        style={{
+          backgroundImage: `url(${img1})`,
+          backgroundSize: "cover",
+        }}
       ></div>
     </div>
   );
