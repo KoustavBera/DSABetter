@@ -9,11 +9,12 @@ import toast, { Toaster } from "react-hot-toast";
 import ViewAllQuestions from "./pages/ViewAllQuestions.jsx";
 import UpdateQuestion from "./pages/UpdateQuestion.jsx";
 import SettingComp from "./pages/SettingComp.jsx";
-import { EditModalProvider } from "../context/EditModalProvider.jsx";
 import About from "./pages/About.jsx";
-import { AuthDataContext } from "../context/AuthContext.jsx";
 import Footer from "./components/Footer.jsx";
-import MyLoader from "./components/MyLoader.jsx";
+import MyLoader from "./components/SkeletonLoaderComponent.jsx";
+import { EditModalProvider } from "../context/EditModalProvider.jsx";
+import { AuthDataContext } from "../context/AuthContext.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx"; // ✅ Importing ProtectedRoute
 
 // 👇 mobile detection function
 const isMobileDevice = () =>
@@ -38,22 +39,59 @@ const App = () => {
   if (loading) {
     return <MyLoader />;
   }
+
   return (
     <div>
       <Toaster position="top-center" reverseOrder={false} />
       <EditModalProvider>
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
-
-          <Route path="/dashboard" element={<Dashboad />} />
-
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/create" element={<CreateQuestion />} />
-          <Route path="/view" element={<ViewAllQuestions />} />
-          <Route path="/edit" element={<UpdateQuestion />} />
-          <Route path="/settings" element={<SettingComp />} />
           <Route path="/about" element={<About />} />
+
+          {/* Protected Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboad />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/create"
+            element={
+              <ProtectedRoute>
+                <CreateQuestion />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/view"
+            element={
+              <ProtectedRoute>
+                <ViewAllQuestions />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/edit"
+            element={
+              <ProtectedRoute>
+                <UpdateQuestion />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <SettingComp />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </EditModalProvider>
     </div>
