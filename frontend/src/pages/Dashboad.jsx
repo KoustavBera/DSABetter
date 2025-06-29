@@ -314,7 +314,10 @@ const Dashboard = () => {
         style={{ scrollBehavior: "smooth" }}
       >
         {/* Dashboard Section */}
-        <section id="Dashboard" className="w-full flex flex-col gap-8">
+        <section
+          id="Dashboard"
+          className="w-full flex flex-col gap-8 scroll-ml-[25vw]"
+        >
           <div id="header">
             <h1 className="text-[32px] font-semibold">Dashboard</h1>
             <p className="text-[gray] text-[16px]">
