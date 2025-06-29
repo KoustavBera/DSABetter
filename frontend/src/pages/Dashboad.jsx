@@ -309,7 +309,7 @@ const Dashboard = () => {
 
       {/* Main Content with left margin to account for fixed sidebar */}
       <div
-        className="w-3/4 bg-white min-h-screen py-8 flex flex-col gap-40 ml-[25%] overflow-y-auto mt-[50px]"
+        className="w-3/4 bg-white z-[1000] min-h-screen py-8 flex flex-col gap-40 ml-[25%] overflow-y-auto mt-[50px]"
         id="Main-Content"
         style={{ scrollBehavior: "smooth" }}
       >
