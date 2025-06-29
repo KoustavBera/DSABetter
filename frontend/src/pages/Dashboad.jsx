@@ -24,6 +24,7 @@ import DifficultyChart from "../components/DifficultyChart";
 import Analytics from "../components/Analytics";
 import axios from "axios";
 import Banner from "../components/Banner.jsx";
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
   const { openModal } = useEditModal();
