@@ -205,9 +205,9 @@ const Dashboard = () => {
       </div>
       {/* Fixed Sidebar */}
       <div
-        className={`w-1/4 bg-white ${
+        className={`w-[22%] bg-white ${
           !bannerclicked && `mt-[50px]`
-        }  h-full flex flex-col items-start justify-start fixed left-0 top-0 z-10`}
+        }  h-full flex flex-col items-start justify-start fixed left-0 top-0  `}
         id="Sidebar"
       >
         <div className="mb-4 mx-9 mt-4 ">
@@ -309,15 +309,12 @@ const Dashboard = () => {
 
       {/* Main Content with left margin to account for fixed sidebar */}
       <div
-        className="w-3/4 bg-white z-[1000] min-h-screen py-8 flex flex-col gap-40 ml-[25%] overflow-y-auto mt-[50px]"
+        className="w-[75%]  bg-white  min-h-screen py-8 flex flex-col gap-40 ml-[25%] overflow-y-auto mt-[50px] z-[8888]"
         id="Main-Content"
         style={{ scrollBehavior: "smooth" }}
       >
         {/* Dashboard Section */}
-        <section
-          id="Dashboard"
-          className="w-full flex flex-col gap-8 scroll-ml-[25vw]"
-        >
+        <section id="Dashboard" className="w-full flex flex-col gap-8">
           <div id="header">
             <h1 className="text-[32px] font-semibold">Dashboard</h1>
             <p className="text-[gray] text-[16px]">
