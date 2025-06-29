@@ -72,7 +72,7 @@ const Dashboard = () => {
   // Check if user is logged in
 
   const handleLogout = async () => {
-    const logoutPromise = await axios.post(
+    const logoutPromise = axios.post(
       serverUrl + "/api/auth/logout",
       {},
       {
