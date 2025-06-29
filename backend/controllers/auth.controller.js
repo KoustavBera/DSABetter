@@ -83,6 +83,7 @@ export const logout = async (req, res) => {
       secure: true,
       sameSite: "none",
     });
+    return res.status(200).json({ message: "Logout successful!" }); // <-- Add this line
   } catch (error) {
     return res.status(500).json({
       message: `logout error ${error.message}`,

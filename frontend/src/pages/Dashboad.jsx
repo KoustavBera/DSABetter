@@ -72,14 +72,20 @@ const Dashboard = () => {
   // Check if user is logged in
 
   const handleLogout = async () => {
+    const logoutPromise = await axios.post(
+      serverUrl + "/api/auth/logout",
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+    toast.promise(logoutPromise, {
+      loading: "Logging out...",
+      success: "Logged out successfully!",
+      error: "Logout failed. Please try again.",
+    });
     try {
-      await axios.post(
-        serverUrl + "/api/auth/logout",
-        {},
-        {
-          withCredentials: true,
-        }
-      );
+      await logoutPromise;
       setUserData(null);
       localStorage.removeItem("reminders");
       navigate("/login");
